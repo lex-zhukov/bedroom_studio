@@ -12,6 +12,8 @@
 # проверка отступа от всех стен
 
 from class_file import Area
+from class_file import Workarea
+from class_file import Sweet_spot
 
 # l = 1 # длина (ширина) помещения
 # sound_speed = 343.1 # скорость звука в студии (воздух, температура 20C, давление 1А)
@@ -63,6 +65,40 @@ def wall_overlap_comparison(a, b, c, d, lst, v1, v2):
         # return 0
         # нет наложения.  
 
+def ss_location_support(val, val_0, ss_first, ss_second):
+    point_check = {val:ss_first, val_0:ss_second}
+    for area in v_areas:
+        check = area.point_belongs(point_check[val], point_check[val_0])
+        if check == True:
+            if val == 'x':
+                ss.set_location(ss_first, ss_second)
+            elif val == 'y':
+                ss.set_location(ss_second, ss_first)
+
+def ss_location():
+    if chosen_lst == horizontal_walls:
+        val = 'x'
+        val_0 = 'y'
+        val_1 = 'x1'
+        val_2 = 'x2'
+    elif chosen_lst == vertical_walls:
+        val = 'y'
+        val_0 = 'x'
+        val_1 = 'y1'
+        val_2 = 'y2'    
+
+    if chosen_lst[step - 1][val_1] < chosen_lst[step - 1][val_2]:
+        ss_first = chosen_lst[step - 1][val_1] + (0.5 * wall_length)
+    else:
+        ss_first = chosen_lst[step - 1][val_1] - (0.5 * wall_length)
+    distance = ((l**2 - (0.5*l)**2)**0.5) + (0.25 * l)
+
+    ss_second = chosen_lst[step - 1][val_0] - distance
+    ss_location_support(val, val_0, ss_first, ss_second)
+    ss_second = chosen_lst[step - 1][val_0] + distance
+    ss_location_support(val, val_0, ss_first, ss_second)
+
+#points = [{'x': 0.0, 'y': 0.0}, {'x': 0.0, 'y': 3.0}, {'x': 0.5, 'y': 3.0}, {'x': 0.5, 'y': 4.5}, {'x': 2.0, 'y': 4.5}, {'x': 2.0, 'y': 6.0}, {'x': 5.0, 'y': 6.0}, {'x': 5.0, 'y': 4.5}, {'x': 6.0, 'y': 4.5}, {'x': 6.0, 'y': 2.5}, {'x': 4.0, 'y': 2.5}, {'x': 4.0, 'y': 0.0}]
 points = [{'x': 0.0, 'y': 0.0}, {'x': 0.0, 'y': 2.0}, {'x': 0.5, 'y': 2.0}, {'x': 0.5, 'y': 3.5}, {'x': 2.0, 'y': 3.5}, {'x': 2.0, 'y': 5.0}, {'x': 5.0, 'y': 5.0}, {'x': 5.0, 'y': 3.5}, {'x': 6.0, 'y': 3.5}, {'x': 6.0, 'y': 1.5}, {'x': 4.0, 'y': 1.5}, {'x': 4.0, 'y': 0.0}]
 vertical_walls = []
 horizontal_walls = []
@@ -128,6 +164,7 @@ try:
     while wall_length < (1.5 * l):
         wall_length = abs(vertical_walls[step]['y1'] - vertical_walls[step]['y2'])
         step += 1
+        chosen_lst = vertical_walls
         direction = 'v'
 except IndexError:
     step = 0
@@ -135,17 +172,18 @@ except IndexError:
     while wall_length < (1.5 * l):
         wall_length = abs(horizontal_walls[step]['x1'] - horizontal_walls[step]['x2'])
         step += 1
+        chosen_lst = horizontal_walls
         direction = 'h'
     
 print(wall_length)
-if direction == 'h':
-    lst = horizontal_walls
-elif direction == 'v':
-    lst = vertical_walls
-print(lst[step - 1])
+print(chosen_lst[step - 1])
 print(direction)
 
+ss = Sweet_spot(0, 0)
 
+ss_location()
+    
+ss.prnt()    
 
 
 
