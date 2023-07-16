@@ -76,6 +76,7 @@ def ss_location_support(val, val_0, ss_first, ss_second):
                 ss.set_location(ss_second, ss_first)
 
 def ss_location():
+    global distance
     if chosen_lst == horizontal_walls:
         val = 'x'
         val_0 = 'y'
@@ -98,12 +99,24 @@ def ss_location():
     ss_second = chosen_lst[step - 1][val_0] + distance
     ss_location_support(val, val_0, ss_first, ss_second)
 
+def target():
+    try:
+        target_x = abs(chosen_wall['x2'] - chosen_wall['x1'])/2
+        target_y = chosen_wall['y']
+        target = {'x':target_x, 'y':target_y}
+    except KeyError:
+        target_y = abs(chosen_wall['y2'] - chosen_wall['y1'])/2
+        target_x = chosen_wall['x']
+        target = {'x':target_x, 'y':target_y}
+    return target
+
 #points = [{'x': 0.0, 'y': 0.0}, {'x': 0.0, 'y': 3.0}, {'x': 0.5, 'y': 3.0}, {'x': 0.5, 'y': 4.5}, {'x': 2.0, 'y': 4.5}, {'x': 2.0, 'y': 6.0}, {'x': 5.0, 'y': 6.0}, {'x': 5.0, 'y': 4.5}, {'x': 6.0, 'y': 4.5}, {'x': 6.0, 'y': 2.5}, {'x': 4.0, 'y': 2.5}, {'x': 4.0, 'y': 0.0}]
 points = [{'x': 0.0, 'y': 0.0}, {'x': 0.0, 'y': 2.0}, {'x': 0.5, 'y': 2.0}, {'x': 0.5, 'y': 3.5}, {'x': 2.0, 'y': 3.5}, {'x': 2.0, 'y': 5.0}, {'x': 5.0, 'y': 5.0}, {'x': 5.0, 'y': 3.5}, {'x': 6.0, 'y': 3.5}, {'x': 6.0, 'y': 1.5}, {'x': 4.0, 'y': 1.5}, {'x': 4.0, 'y': 0.0}]
 vertical_walls = []
 horizontal_walls = []
 v_areas = []
 h_areas = []
+distance = 0
 
 wall_number = 0
 while wall_number < 4:
@@ -165,7 +178,7 @@ try:
         wall_length = abs(vertical_walls[step]['y1'] - vertical_walls[step]['y2'])
         step += 1
         chosen_lst = vertical_walls
-        direction = 'v'
+        direction = 'v' # исключить
 except IndexError:
     step = 0
     wall_length = 0
@@ -173,22 +186,27 @@ except IndexError:
         wall_length = abs(horizontal_walls[step]['x1'] - horizontal_walls[step]['x2'])
         step += 1
         chosen_lst = horizontal_walls
-        direction = 'h'
+        direction = 'h' # исключить
     
-print(wall_length)
-print(chosen_lst[step - 1])
-print(direction)
+print('wall length:', wall_length)
+print('chosen wall:', chosen_lst[step - 1])
+print('direction:', direction)
 
-ss = Sweet_spot(0, 0)
-
-ss_location()
-    
+ss = Sweet_spot(0, 0) # объявление экземпляра класса точки прослушивания
+ss_location() # определяем и фиксируем положение точки прослушивания
+print('sweet spot:')
 ss.prnt()    
 
+# определяем зону прослушивания:
+wa = Workarea(0, 0, 0, 0) # объявление экземпляра класса зоны прослушивания
+chosen_wall = chosen_lst[step - 1] # выбранная стена
+target = target() # определяем точку в которую смотрит слушатель
+print('target', target)
+workarea_cds = ss.create_workarea(l, target, distance) # определяем зону прослушивания
+print('workarea:')
+wa.set_area(workarea_cds)
+wa.prnt()
 
-
-
-
-   # определяем sweet spot (x, y)
-    # проверяем размещение, проверяем удаленность от стен
+# и проверяем отсутствие в ней стен и углов:
+    # делим все большие стены и добавляем точки
     
