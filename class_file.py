@@ -20,6 +20,8 @@ class Area:
             return True
         else:
             return False
+# sound_speed = 343.1 # скорость звука в студии (воздух, температура 20C, давление 1А)
+# standing_wave = sound_speed / (l * 2) # формула стоячей волны
     
 #    def standing_wave(self, direction):
 #        if dicrection == v:      
@@ -59,6 +61,7 @@ class Sweet_spot(object):
         print(f"x = {self.coordinate_x}, y = {self.coordinate_y}")
 
     def create_workarea(self, l, target, distance):
+        lst = []
         if self.coordinate_x == target['x']:
             if self.coordinate_y < target['y']:
                 a = self.coordinate_x - (0.749 * l)
@@ -87,7 +90,7 @@ class Sweet_spot(object):
 
 # class Acoustic_system(Sweet_spot):
     
-# class Acoustic_panel(Acoustic_system):
+# class Acoustic_panel(Area):
 
 
 

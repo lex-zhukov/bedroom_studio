@@ -1,24 +1,6 @@
-# построение помещения по координатам
-# инициализация стен и их направлений
-# выделение прямоугольных зон
-    # определить все горизонтальные стены
-    # определить наложение друг на друга между всеми
-    # если наложение есть, то создать зону, это будет x1 и x2
-    # y1 и y2 взять из сравниваемых стен
-    # повторить для вертикальных стен
-# расчет стоячих волн по зонам
-# выделение стены достаточной длины для размещения АС
-# проверка площади для размещения точки прослушивания
-# проверка отступа от всех стен
-
 from class_file import Area
 from class_file import Workarea
 from class_file import Sweet_spot
-
-# l = 1 # длина (ширина) помещения
-# sound_speed = 343.1 # скорость звука в студии (воздух, температура 20C, давление 1А)
-# standing_wave = sound_speed / (l * 2) # формула стоячей волны
-# print(standing_wave, "Hz")
 
 def walls(a, b):
     c_1 = (points[a]['x'])
@@ -58,8 +40,7 @@ def wall_overlap_comparison(a, b, c, d, lst, v1, v2):
         elif lst == horizontal_walls:
             area = Area(coordinate_list[1], coordinate_list[2], lst[v1]['y'], lst[v2]['y'])
             h_areas.append(area)
-        area.prnt()
-        
+        area.prnt()  
     else:
         print('not overlaped')
         # return 0
@@ -99,19 +80,37 @@ def ss_location():
     ss_second = chosen_lst[step - 1][val_0] + distance
     ss_location_support(val, val_0, ss_first, ss_second)
 
-def target():
+def target_search():
     try:
-        target_x = abs(chosen_wall['x2'] - chosen_wall['x1'])/2
+        target_add = [chosen_wall['x1'], chosen_wall['x2']]
+        target_x = (abs(chosen_wall['x2'] - chosen_wall['x1'])/2) + min(target_add)
         target_y = chosen_wall['y']
         target = {'x':target_x, 'y':target_y}
     except KeyError:
-        target_y = abs(chosen_wall['y2'] - chosen_wall['y1'])/2
+        target_add = [chosen_wall['y1'], chosen_wall['y2']]
+        target_y = (abs(chosen_wall['y2'] - chosen_wall['y1'])/2) + min(target_add)
         target_x = chosen_wall['x']
         target = {'x':target_x, 'y':target_y}
     return target
 
-#points = [{'x': 0.0, 'y': 0.0}, {'x': 0.0, 'y': 3.0}, {'x': 0.5, 'y': 3.0}, {'x': 0.5, 'y': 4.5}, {'x': 2.0, 'y': 4.5}, {'x': 2.0, 'y': 6.0}, {'x': 5.0, 'y': 6.0}, {'x': 5.0, 'y': 4.5}, {'x': 6.0, 'y': 4.5}, {'x': 6.0, 'y': 2.5}, {'x': 4.0, 'y': 2.5}, {'x': 4.0, 'y': 0.0}]
-points = [{'x': 0.0, 'y': 0.0}, {'x': 0.0, 'y': 2.0}, {'x': 0.5, 'y': 2.0}, {'x': 0.5, 'y': 3.5}, {'x': 2.0, 'y': 3.5}, {'x': 2.0, 'y': 5.0}, {'x': 5.0, 'y': 5.0}, {'x': 5.0, 'y': 3.5}, {'x': 6.0, 'y': 3.5}, {'x': 6.0, 'y': 1.5}, {'x': 4.0, 'y': 1.5}, {'x': 4.0, 'y': 0.0}]
+def add_check_points(lst, a1, a2, a, b): # добавляет дополнительные точки в длинные 
+    for wall in lst:                     # стены для проверки рабочй зоны на препятствия
+        if wall[a1] < wall[a2]:
+            i = 0.75
+            while i < abs(wall[a2] - wall[a1]):
+                check_points.append({b:wall[b], a:(wall[a1] + i)})
+                i += 0.75 
+        elif wall[a1] > wall[a2]:
+            i = 0.75
+            while i < abs(wall[a1] - wall[a2]):
+                check_points.append({b:wall[b], a:(wall[a2] + i)})
+                i += 0.75
+
+#points = [{'x': 0.0, 'y': 0.0}, {'x': 0.0, 'y': 3.0}, {'x': 0.5, 'y': 3.0}, {'x': 0.5, 'y': 4.5}, {'x': 1.5, 'y': 4.5}, {'x': 1.5, 'y': 1.0}, {'x': 2.0, 'y': 1.0}, {'x': 2.0, 'y': 6.0}, {'x': 5.0, 'y': 6.0}, {'x': 5.0, 'y': 4.5}, {'x': 6.0, 'y': 4.5}, {'x': 6.0, 'y': 2.5}, {'x': 4.0, 'y': 2.5}, {'x': 4.0, 'y': 0.0}]
+# этот со стеной в зоне
+points = [{'x': 0.0, 'y': 0.0}, {'x': 0.0, 'y': 3.0}, {'x': 0.5, 'y': 3.0}, {'x': 0.5, 'y': 4.5}, {'x': 2.0, 'y': 4.5}, {'x': 2.0, 'y': 6.0}, {'x': 5.0, 'y': 6.0}, {'x': 5.0, 'y': 4.5}, {'x': 6.0, 'y': 4.5}, {'x': 6.0, 'y': 2.5}, {'x': 4.0, 'y': 2.5}, {'x': 4.0, 'y': 0.0}]
+#points = [{'x': 0.0, 'y': 0.0}, {'x': 0.0, 'y': 2.0}, {'x': 0.5, 'y': 2.0}, {'x': 0.5, 'y': 3.5}, {'x': 2.0, 'y': 3.5}, {'x': 2.0, 'y': 5.0}, {'x': 5.0, 'y': 5.0}, {'x': 5.0, 'y': 3.5}, {'x': 6.0, 'y': 3.5}, {'x': 6.0, 'y': 1.5}, {'x': 4.0, 'y': 1.5}, {'x': 4.0, 'y': 0.0}]
+check_points = [{'x': 2.0, 'y': 1.0}]
 vertical_walls = []
 horizontal_walls = []
 v_areas = []
@@ -137,8 +136,8 @@ while z < wall_number:
     walls(z - 1, z)
     z += 1
 
-print(vertical_walls)
-print(horizontal_walls)
+# print(vertical_walls)
+# print(horizontal_walls)
 
 # выделяем зоны для расчета стоячих волн:
 
@@ -170,43 +169,74 @@ else:
 print(room_size, "m2")
 
 # выбираем стену, достаточную для расположения АС
-
-try:
-    step = 0
-    wall_length = 0
-    while wall_length < (1.5 * l):
-        wall_length = abs(vertical_walls[step]['y1'] - vertical_walls[step]['y2'])
-        step += 1
-        chosen_lst = vertical_walls
-        direction = 'v' # исключить
-except IndexError:
-    step = 0
-    wall_length = 0
-    while wall_length < (1.5 * l):
-        wall_length = abs(horizontal_walls[step]['x1'] - horizontal_walls[step]['x2'])
-        step += 1
-        chosen_lst = horizontal_walls
-        direction = 'h' # исключить
+testing = False # проверка для выхода из цикла выбора стены
+testing_val = False # техническое значение для цикла
+n = 0
+while testing == False:
+    try:
+        step = 0
+        wall_length = 0
+        while wall_length < (1.5 * l):
+            wall_length = abs(vertical_walls[step]['y1'] - vertical_walls[step]['y2'])
+            step += 1
+            chosen_lst = vertical_walls
+            direction = 'v' # исключить
+    except IndexError:
+        step = 0
+        wall_length = 0
+        while wall_length < (1.5 * l):
+            wall_length = abs(horizontal_walls[step]['x1'] - horizontal_walls[step]['x2'])
+            step += 1
+            chosen_lst = horizontal_walls
+            direction = 'h' # исключить
     
-print('wall length:', wall_length)
-print('chosen wall:', chosen_lst[step - 1])
-print('direction:', direction)
+    print('..........')
+    print('wall length:', wall_length)
+    print('chosen wall:', chosen_lst[step - 1])
+    print('direction:', direction)
 
-ss = Sweet_spot(0, 0) # объявление экземпляра класса точки прослушивания
-ss_location() # определяем и фиксируем положение точки прослушивания
-print('sweet spot:')
-ss.prnt()    
+    ss = Sweet_spot(0, 0) # объявление экземпляра класса точки прослушивания
+    ss_location() # определяем и фиксируем положение точки прослушивания
+    print('sweet spot:')
+    ss.prnt()    
 
-# определяем зону прослушивания:
-wa = Workarea(0, 0, 0, 0) # объявление экземпляра класса зоны прослушивания
-chosen_wall = chosen_lst[step - 1] # выбранная стена
-target = target() # определяем точку в которую смотрит слушатель
-print('target', target)
-workarea_cds = ss.create_workarea(l, target, distance) # определяем зону прослушивания
-print('workarea:')
-wa.set_area(workarea_cds)
-wa.prnt()
+    # определяем зону прослушивания:
+    wa = Workarea(0, 0, 0, 0) # объявление экземпляра класса зоны прослушивания
+    chosen_wall = chosen_lst[step - 1] # выбранная стена
+    target = target_search() # определяем точку в которую смотрит слушатель
+    print('target', target)
+    workarea_cds = ss.create_workarea(l, target, distance) # определяем зону прослушивания
+    print('workarea:')
+    wa.set_area(workarea_cds)
+    wa.prnt()
 
-# и проверяем отсутствие в ней стен и углов:
-    # делим все большие стены и добавляем точки
-    
+    # и проверяем отсутствие в ней стен и углов:
+        # делим все большие стены и добавляем точки
+    for point in points:
+        check_points.append(point) # копируем список точек в который добавим дополнительные
+    add_check_points(vertical_walls, 'y1', 'y2', 'y', 'x')
+    add_check_points(horizontal_walls, 'x1', 'x2', 'x', 'y')
+    # print(check_points)
+    nnn = 0
+    for point in check_points:
+        test = wa.point_belongs(point['x'], point['y'])  
+        nnn += 1
+        print(str(test) + str(nnn))
+        if test == True:
+            chosen_lst.pop(step - 1)
+            testing_val = True
+            break
+        testing_val = False
+                
+    if testing_val == True:
+        print(check_points)
+        check_points = []
+        del target
+        del chosen_lst
+        del wa
+        del workarea_cds
+        del test
+        del ss
+        continue
+    else:
+        testing = True # проверка для выхода из цикла выбора стены
