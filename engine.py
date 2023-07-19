@@ -32,7 +32,10 @@ def wall_overlap_comparison(a, b, c, d, lst, v1, v2):
         ((a > d > b) or (b > d > a)) or 
         ((a == c and b == d) or (a == d and b == c)) or 
         (a < b and d < c and ((b == c and a != d) or (a == d and b != c))) or
-        (a < b and c < d and ((b == d and a != c) or (a == c and b != d)))):
+        (a < b and c < d and ((b == d and a != c) or (a == c and b != d))) or
+        (((b > d > a) and (b > c > a)) or ((d > b > c) and (d > a > c))) or 
+        (b < a and d < c and ((a == c and b != d) or (b == d and a != c))) or
+        (b < a and c < d and ((a == d and b != c) or (b == c and a != d)))):
         coordinate_list = sorted([a, b, c, d])
         if lst == vertical_walls:
             area = Area(lst[v1]['x'], lst[v2]['x'], coordinate_list[1], coordinate_list[2])

@@ -6,6 +6,12 @@ class Area:
         self.coordinate_y1 = y1
         self.coordinate_y2 = y2
     
+    def focus(self):
+        x = abs(self.coordinate_x1 - self.coordinate_x2)/2 + min([self.coordinate_x1, self.coordinate_x2])
+        y = abs(self.coordinate_y1 - self.coordinate_y2)/2 + min([self.coordinate_y1, self.coordinate_y2])
+        xy = {'x':x, 'y':y}
+        return xy
+    
     def size(self):
         length = abs(self.coordinate_y1 - self.coordinate_y2)
         width = abs(self.coordinate_x1 - self.coordinate_x2)
