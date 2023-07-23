@@ -1,0 +1,46 @@
+outside_areas = []
+
+def wall_point(wall, point, p1, p2, p0, p):
+    if ((wall[p] == point[p]) and
+        max([wall[p1], wall[p2]) > point[p0] > mmin([wall[p1], wall[p2])
+        return True
+    else:
+        return False
+
+def focus_test_func(expression, lst_1, lst_2, point):
+    result = False
+    count = 0
+    point_start_x = point['x']
+    point_start_y = point['y']
+    while (result == False) or (count < 10000):
+        for wall in lst_1:
+            result += wall_point(wall, point, 'y1', 'y2', 'y', 'x')
+        for wall in lst_2:
+            result += wall_point(wall, point, 'x1', 'x2', 'x', 'y')
+        if result == False:
+            expression
+            count += 1
+        elif result == True:
+            focus_test_local = True
+            break
+    else:
+        focus_test_local = False
+    point = {'x':point_start_x, 'y':point_start_y}
+    return focus_test_local
+
+focus_i = 0
+for point in focus_lst:
+    test_1 = focs_test_func((point['x'] += 0.001), vertical_walls, horizontal_walls, point)
+    test_2 = focs_test_func((point['x'] -= 0.001), vertical_walls, horizontal_walls, point)
+    test_3 = focs_test_func((point['y'] += 0.001), vertical_walls, horizontal_walls, point)
+    test_4 = focs_test_func((point['y'] -= 0.001), vertical_walls, horizontal_walls, point)
+    focus_test = test_1 * test_2 * test_3 * test_4
+    if focus_test == False:
+        this_area = v_areas[focus_i] # определить списки зон???????        
+        outside_areas.append(this_area)
+    focus_i += 1
+
+
+
+        
+        

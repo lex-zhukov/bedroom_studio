@@ -1,4 +1,5 @@
 from class_file import Area
+import time
 
 def walls(a, b):
     c_1 = (points[a]['x'])
@@ -126,31 +127,122 @@ print(focus_lst)
 print('points:   ')
 print(len(focus_lst))
 
-def wall_point(wall, point, p1, p2, p0, p):
-    if ((wall[p] == point[p]) and
-        max([wall[p1], wall[p2]]) > point[p0] > min([wall[p1], wall[p2]])):
-        return True
-    else:
-        return False
+outside_areas = []
 
-for point in focus_lst:
-    for wall in vertical_walls:
-        value = wall_point(wall, point, 'y1', 'y2', 'y', 'x')
-        if value == True:
-            first = True
-            break
-        else:
-            first = False
-            
+# ставим 4 точки вокруг зоны
+# если 3 из них point_belongs = True, а одна False, то это потенциальная outside
+# если со стороны False нет стены, то это outside
 
 
+
+#for area in v_areas:
+excluding = v_areas[0].exclude()
+for area in v_areas:
+    over_result = area.point_belongs(excluding[0]['x'], excluding[0]['y'])
+    if over_result == True:
+        break
+for area in v_areas:
+    under_result = area.point_belongs(excluding[1]['x'], excluding[1]['y'])
+    if under_result == True:
+        break
+for area in v_areas:
+    right_result = area.point_belongs(excluding[2]['x'], excluding[2]['y'])
+    if right_result == True:
+        break
+for area in v_areas:
+    left_result = area.point_belongs(excluding[3]['x'], excluding[3]['y'])
+    if right_result == True:
+        break
+summ = int(over_result) + int(under_result) + int(left_result) + int(right_result)
+if summ == 3:
+    side = min([over_result, under_result, left_result, right_result])
+    
+    
+    
+
+
         
-        
-        
-        
-        
-        
-        
+
+print(over_result)
+print(under_result)
+print(right_result)
+print(left_result)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# def focus_line_points(focus_point, direction):
+#     line_points = []
+#     add = 0.25
+#     for i in range(10):
+#         if direction == 'up':
+#             y = focus_point['y'] + add
+#             x = focus_point['x']
+#         elif direction == 'down':
+#             y = focus_point['y'] - add
+#             x = focus_point['x']
+#             if y < 0:
+#                 break
+#         elif direction == 'right':
+#             x = focus_point['x'] + add
+#             y = focus_point['y']
+#         elif direction == 'left':
+#             x = focus_point['x'] - add
+#             y = focus_point['y']
+#             if x < 0:
+#                 break
+#         line_points.append({'x':x, 'y':y})
+#         add += 0.25
+#     return line_points
+
+
+# check_areas = [] # создаем проверочный список зон
+# for area in v_areas: # добавляем зоны в проверочный список зон
+#     check_areas.append(area)
+# check_areas.remove(v_areas[7]) # убираем проверяемую зону из проверочного списка
+# checklist = focus_line_points(focus_lst[7], 'up')    
+    
+# first_result = False
+# count = 0
+# for pos in checklist:
+#     for area in check_areas:
+#         result = area.point_belongs(pos['x'], pos['y'])
+#         count += 1
+#         print(result, count, pos)
+#         area.prnt()
+#         if result == True:
+#             first_result = True
+#             break
+
+# print(first_result)
+    
         
         
         

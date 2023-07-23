@@ -6,6 +6,27 @@ class Area:
         self.coordinate_y1 = y1
         self.coordinate_y2 = y2
     
+    def get_coordinate(self, c):
+        if c == 'x1':
+            return self.coordinate_x1
+        elif c == 'x2':
+            return self.coordinate_x2
+        elif c == 'y1':
+            return self.coordinate_y1
+        elif c == 'y2':
+            return self.coordinate_y2
+    
+    def exclude(self):
+        length = abs(self.coordinate_y1 - self.coordinate_y2)
+        width = abs(self.coordinate_x1 - self.coordinate_x2)
+        focus = self.focus()
+        overpoint = {'y':((focus['y']) + (length / 2) + 0.01), 'x':focus['x']}
+        underpoint = {'y':((focus['y']) - (length / 2) - 0.01), 'x':focus['x']}
+        rightpoint = {'x':((focus['x']) + (width / 2) + 0.01), 'y':focus['y']}
+        leftpoint = {'x':((focus['x']) - (width / 2) - 0.01), 'y':focus['y']}
+        lst = [overpoint, underpoint, rightpoint, leftpoint]
+        return lst
+    
     def focus(self):
         x = abs(self.coordinate_x1 - self.coordinate_x2)/2 + min([self.coordinate_x1, self.coordinate_x2])
         y = abs(self.coordinate_y1 - self.coordinate_y2)/2 + min([self.coordinate_y1, self.coordinate_y2])
@@ -58,6 +79,10 @@ class Sweet_spot(object):
     def __init__(self, x, y):
         self.coordinate_x = x
         self.coordinate_y = y
+
+    def get_location(self):
+        location = {'x':self.coordinate_x, 'y':self.coordinate_y}
+        return location
 
     def set_location(self, x, y):
         self.coordinate_x = x
