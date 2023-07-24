@@ -1,3 +1,5 @@
+# В ЭТОМ ФАЙЛЕ ТОЛЬКО ФУНКЦИЯ РАСПОЛОЖЕНИЯ ЦЕНТРОВ ПАНЕЛЕЙ
+
 from engine import l, ss, h_areas, target
 
 sw = ss.get_location()

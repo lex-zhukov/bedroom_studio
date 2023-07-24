@@ -50,18 +50,18 @@ def wall_overlap_comparison(a, b, c, d, lst, v1, v2):
 #        area.prnt()  
 
 
-def add_check_points(lst, a1, a2, a, b): # добавляет дополнительные точки в длинные 
+def add_check_points(lst, a1, a2, a, b): # добавляет дополнительные точки в 
     for wall in lst:                     # стены для проверки рабочй зоны на препятствия
         if wall[a1] < wall[a2]:
-            i = 0.1
+            i = 0.01
             while i < abs(wall[a2] - wall[a1]):
                 check_points.append({b:wall[b], a:(wall[a1] + i)})
-                i += 0.1 
+                i += 0.01 
         elif wall[a1] > wall[a2]:
-            i = 0.1
+            i = 0.01
             while i < abs(wall[a1] - wall[a2]):
                 check_points.append({b:wall[b], a:(wall[a2] + i)})
-                i += 0.1
+                i += 0.01
 
 points = [{'x': 0.0, 'y': 0.0}, {'x': 0.0, 'y': 3.0}, {'x': 0.5, 'y': 3.0}, {'x': 0.5, 'y': 4.5}, {'x': 1.5, 'y': 4.5}, {'x': 1.5, 'y': 1.0}, {'x': 2.0, 'y': 1.0}, {'x': 2.0, 'y': 6.0}, {'x': 5.0, 'y': 6.0}, {'x': 5.0, 'y': 4.5}, {'x': 6.0, 'y': 4.5}, {'x': 6.0, 'y': 2.5}, {'x': 4.0, 'y': 2.5}, {'x': 4.0, 'y': 0.0}]
 # этот со стеной в зоне (14)
@@ -127,48 +127,91 @@ print(focus_lst)
 print('points:   ')
 print(len(focus_lst))
 
-outside_areas = []
+# РАБОТАТЬ ОТСЮДА
 
-# ставим 4 точки вокруг зоны
-# если 3 из них point_belongs = True, а одна False, то это потенциальная outside
-# если со стороны False нет стены, то это outside
+for point in points:
+    check_points.append(point) # копируем список точек в который добавим дополнительные
+add_check_points(vertical_walls, 'y1', 'y2', 'y', 'x')
+add_check_points(horizontal_walls, 'x1', 'x2', 'x', 'y')
 
+outside_v_areas = []
+outside_h_areas = []
 
+def ex_areas(lst, zone):
+    wallcheck_areas = []
+    excluding = zone.exclude()
+    for area in lst:
+        over_result = area.point_belongs(excluding[0]['x'], excluding[0]['y'])
+        if over_result == True:
+            break
+    for area in lst:
+        under_result = area.point_belongs(excluding[1]['x'], excluding[1]['y'])
+        if under_result == True:
+            break
+    for area in lst:
+        right_result = area.point_belongs(excluding[2]['x'], excluding[2]['y'])
+        if right_result == True:
+            break
+    for area in lst:
+        left_result = area.point_belongs(excluding[3]['x'], excluding[3]['y'])
+        if left_result == True:
+            break
+    summ = int(over_result) + int(under_result) + int(left_result) + int(right_result)
+    if summ == 3:
+        x_es = [(zone.get_coordinate('x1')), zone.get_coordinate('x2')]
+        y_es = [(zone.get_coordinate('y1')), zone.get_coordinate('y2')]
+        if over_result == False:
+            wx_min = min(x_es) + 0.01 
+            wx_max = max(x_es) - 0.01
+            wy_min = max(y_es) - 0.01
+            wy_max = max(y_es) + 0.01
+        elif under_result == False:
+            wx_min = min(x_es) + 0.01 
+            wx_max = max(x_es) - 0.01
+            wy_min = min(y_es) - 0.01
+            wy_max = min(y_es) + 0.01
+        elif right_result == False:
+            wx_min = max(x_es) + 0.01 
+            wx_max = max(x_es) - 0.01
+            wy_min = min(y_es) + 0.01
+            wy_max = max(y_es) - 0.01
+        elif left_result == False:
+            wx_min = min(x_es) + 0.01 
+            wx_max = min(x_es) - 0.01
+            wy_min = min(y_es) + 0.01
+            wy_max = max(y_es) - 0.01
+        wallcheck_areas.append(Area(wx_min, wx_max, wy_min, wy_max))
+    else:
+        text = 'зона не outside'
+        print('.......................')
+        zone.prnt()
+        print(text)
+        print('.......................')
+        return
 
-#for area in v_areas:
-excluding = v_areas[0].exclude()
-for area in v_areas:
-    over_result = area.point_belongs(excluding[0]['x'], excluding[0]['y'])
-    if over_result == True:
-        break
-for area in v_areas:
-    under_result = area.point_belongs(excluding[1]['x'], excluding[1]['y'])
-    if under_result == True:
-        break
-for area in v_areas:
-    right_result = area.point_belongs(excluding[2]['x'], excluding[2]['y'])
-    if right_result == True:
-        break
-for area in v_areas:
-    left_result = area.point_belongs(excluding[3]['x'], excluding[3]['y'])
-    if right_result == True:
-        break
-summ = int(over_result) + int(under_result) + int(left_result) + int(right_result)
-if summ == 3:
-    side = min([over_result, under_result, left_result, right_result])
-    
-    
-    
+    zone.prnt()
+    print(over_result)
+    print(under_result)
+    print(right_result)
+    print(left_result)
+    wallcheck_areas[0].prnt()
+    for point in check_points:
+        ask = wallcheck_areas[0].point_belongs(point['x'], point['y'])
+        if ask == True:
+            print('стена есть: ')
+            zone.prnt()
+            print('.......................')
+            wallcheck_areas.clear()
+            break
+    else:
+        outside_v_areas.append(zone)
 
+for zone in v_areas:
+    ex_areas(v_areas, zone)
 
-        
-
-print(over_result)
-print(under_result)
-print(right_result)
-print(left_result)
-
-
+# В ЭТОМ ФАЙЛЕ НАЧАЛО ПРОГРАММЫ: СОЗДАНИЕ ЗОН И ФОКУСНЫЕ ТОЧКИ, ТОЧКИ ПРИЦЕЛА...
+# Ф-Я OUTSIDE AREA НАПИСАНА, ДОБАВИТЬ ВКЛЮЧЕНИЕ ЗОНЫ В СООТВЕТСТВУЮЩИЙ СПИСОК
+# ДОБАВИТЬ ТО ЖЕ ПО h_areas, откорректировать функцию, добавить переменные
 
 
 

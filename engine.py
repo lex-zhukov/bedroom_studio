@@ -99,15 +99,15 @@ def target_search():
 def add_check_points(lst, a1, a2, a, b): # добавляет дополнительные точки в длинные 
     for wall in lst:                     # стены для проверки рабочй зоны на препятствия
         if wall[a1] < wall[a2]:
-            i = 0.75
+            i = 0.01
             while i < abs(wall[a2] - wall[a1]):
                 check_points.append({b:wall[b], a:(wall[a1] + i)})
-                i += 0.75 
+                i += 0.01 
         elif wall[a1] > wall[a2]:
-            i = 0.75
+            i = 0.01
             while i < abs(wall[a1] - wall[a2]):
                 check_points.append({b:wall[b], a:(wall[a2] + i)})
-                i += 0.75
+                i += 0.01
 
 #points = [{'x': 0.0, 'y': 0.0}, {'x': 0.0, 'y': 3.0}, {'x': 0.5, 'y': 3.0}, {'x': 0.5, 'y': 4.5}, {'x': 1.5, 'y': 4.5}, {'x': 1.5, 'y': 1.0}, {'x': 2.0, 'y': 1.0}, {'x': 2.0, 'y': 6.0}, {'x': 5.0, 'y': 6.0}, {'x': 5.0, 'y': 4.5}, {'x': 6.0, 'y': 4.5}, {'x': 6.0, 'y': 2.5}, {'x': 4.0, 'y': 2.5}, {'x': 4.0, 'y': 0.0}]
 # этот со стеной в зоне
@@ -219,21 +219,17 @@ while testing == False:
         check_points.append(point) # копируем список точек в который добавим дополнительные
     add_check_points(vertical_walls, 'y1', 'y2', 'y', 'x')
     add_check_points(horizontal_walls, 'x1', 'x2', 'x', 'y')
-    # print(check_points)
-    nnn = 0
+
     for point in check_points:
         test = wa.point_belongs(point['x'], point['y'])  
-        nnn += 1
-        print(str(test) + str(nnn))
         if test == True:
-            chosen_lst.pop(step - 1)
-            testing_val = True
-            break
-        testing_val = False
+            chosen_lst.pop(step - 1) # НАДО КАК ТО ОБОЙТИ УДАЛЕНИЕ, ЧТОБЫ ПОТОМ С МЕНЬШЕЙ
+            testing_val = True       # БАЗОЙ СТЕНЫ СНОВА ЗАНОВО ПОШЛИ. ЛИБО СТАВИТЬ В КОНЕЦ
+            break                    # ВМЕСТО УДАЛЕНИЯ И УКАЗЫВАТЬ КОЛИЧЕСТВО ЦИКЛОВ, ЛИБО
+        testing_val = False          # ЕЩЕ КАКИМ ТО ОБРАЗОМ
                 
     if testing_val == True:
-        print(check_points)
-        check_points = []
+        check_points = [{'x': 2.0, 'y': 1.0}] # исключить (очистить)
         del target
         del chosen_lst
         del wa
