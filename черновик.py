@@ -63,6 +63,34 @@ def add_check_points(lst, a1, a2, a, b): # добавляет дополните
                 check_points.append({b:wall[b], a:(wall[a2] + i)})
                 i += 0.01
 
+def ex_through(lst, checked_area, wall_area):
+    global v_areas
+    global h_areas
+    x1_z1 = min([wall_area.get_coordinate('x1'), wall_area.get_coordinate('x2')]) 
+    x2_z1 = max([wall_area.get_coordinate('x1'), wall_area.get_coordinate('x2')]) 
+    y1_z1 = min([wall_area.get_coordinate('y1'), wall_area.get_coordinate('y2')]) 
+    y2_z1 = max([wall_area.get_coordinate('y1'), wall_area.get_coordinate('y2')]) 
+    x1_z2 = min([checked_area.get_coordinate('x1'), checked_area.get_coordinate('x2')]) 
+    x2_z2 = max([checked_area.get_coordinate('x1'), checked_area.get_coordinate('x2')]) 
+    y1_z2 = min([checked_area.get_coordinate('y1'), checked_area.get_coordinate('y2')]) 
+    y2_z2 = max([checked_area.get_coordinate('y1'), checked_area.get_coordinate('y2')]) 
+    if lst == v_areas:
+        if ((x1_z2 <= x1_z1) and 
+            (x2_z2 >= x2_z1) and
+            (y1_z2 >= y1_z1) and
+            (y2_z2 <= y2_z1)):
+            excluded_v_areas.append(checked_area)
+        else:
+            return
+    elif lst == h_areas:
+        if ((x1_z1 <= x1_z2) and 
+            (x2_z1 >= x2_z2) and
+            (y1_z1 >= y1_z2) and
+            (y2_z1 <= y2_z2)):
+            excluded_h_areas.append(checked_area)
+        else:
+            return  
+
 points = [{'x': 0.0, 'y': 0.0}, {'x': 0.0, 'y': 3.0}, {'x': 0.5, 'y': 3.0}, {'x': 0.5, 'y': 4.5}, {'x': 1.5, 'y': 4.5}, {'x': 1.5, 'y': 1.0}, {'x': 2.0, 'y': 1.0}, {'x': 2.0, 'y': 6.0}, {'x': 5.0, 'y': 6.0}, {'x': 5.0, 'y': 4.5}, {'x': 6.0, 'y': 4.5}, {'x': 6.0, 'y': 2.5}, {'x': 4.0, 'y': 2.5}, {'x': 4.0, 'y': 0.0}]
 # этот со стеной в зоне (14)
 
@@ -136,23 +164,25 @@ add_check_points(horizontal_walls, 'x1', 'x2', 'x', 'y')
 
 outside_v_areas = []
 outside_h_areas = []
+excluded_v_areas = []
+excluded_h_areas = []
 
 def ex_areas(lst, zone):
     wallcheck_areas = []
     excluding = zone.exclude()
-    for area in lst:
+    for area in all_areas:
         over_result = area.point_belongs(excluding[0]['x'], excluding[0]['y'])
         if over_result == True:
             break
-    for area in lst:
+    for area in all_areas:
         under_result = area.point_belongs(excluding[1]['x'], excluding[1]['y'])
         if under_result == True:
             break
-    for area in lst:
+    for area in all_areas:
         right_result = area.point_belongs(excluding[2]['x'], excluding[2]['y'])
         if right_result == True:
             break
-    for area in lst:
+    for area in all_areas:
         left_result = area.point_belongs(excluding[3]['x'], excluding[3]['y'])
         if left_result == True:
             break
@@ -204,16 +234,23 @@ def ex_areas(lst, zone):
             wallcheck_areas.clear()
             break
     else:
-        outside_v_areas.append(zone)
+        lst.append(zone)
+
+all_areas = v_areas + h_areas
 
 for zone in v_areas:
-    ex_areas(v_areas, zone)
-
-# В ЭТОМ ФАЙЛЕ НАЧАЛО ПРОГРАММЫ: СОЗДАНИЕ ЗОН И ФОКУСНЫЕ ТОЧКИ, ТОЧКИ ПРИЦЕЛА...
-# Ф-Я OUTSIDE AREA НАПИСАНА, ДОБАВИТЬ ВКЛЮЧЕНИЕ ЗОНЫ В СООТВЕТСТВУЮЩИЙ СПИСОК
-# ДОБАВИТЬ ТО ЖЕ ПО h_areas, откорректировать функцию, добавить переменные
+    ex_areas(outside_v_areas, zone)
+for zone in h_areas:
+    ex_areas(outside_h_areas, zone)
 
 
+for zone in outside_v_areas:
+    for area in v_areas:
+        ex_through(v_areas, area, zone)
+    
+print('excluded zones:')
+for area in outside_areas:
+    area.prnt()
 
 
 

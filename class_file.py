@@ -6,6 +6,16 @@ class Area:
         self.coordinate_y1 = y1
         self.coordinate_y2 = y2
     
+    def set_coordinate(self, c, v):
+        if c == 'x1':
+            self.coordinate_x1 = v
+        elif c == 'x2':
+            self.coordinate_x2 = v
+        elif c == 'y1':
+            self.coordinate_y1 = v
+        elif c == 'y2':
+            self.coordinate_y2 = v
+        
     def get_coordinate(self, c):
         if c == 'x1':
             return self.coordinate_x1
