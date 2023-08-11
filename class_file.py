@@ -26,7 +26,7 @@ class Area:
         elif c == 'y2':
             return self.coordinate_y2
     
-    def exclude(self):
+    def exclude(self): # добавляет 4 точки вокруг зоны "прицелом" для проверки
         length = abs(self.coordinate_y1 - self.coordinate_y2)
         width = abs(self.coordinate_x1 - self.coordinate_x2)
         focus = self.focus()
@@ -57,6 +57,22 @@ class Area:
             return True
         else:
             return False
+        
+    def get_lines(self, dir):
+        y_up = max([self.coordinate_y1, self.coordinate_y2]) - 0.001
+        y_down = min([self.coordinate_y1, self.coordinate_y2]) + 0.001
+        x_left = min([self.coordinate_x1, self.coordinate_x2]) + 0.001
+        x_right = max([self.coordinate_x1, self.coordinate_x2]) - 0.001
+        if dir == 'v': # зона из вертикальных стен
+            upline = {'y':y_up, 'x1':x_left, 'x2':x_right}
+            downline = {'y':y_down, 'x1':x_left, 'x2':x_right}
+            linelist = [upline, downline]
+        elif dir == 'h': # зона из горизонтальных стен
+            leftline = {'x':x_left, 'y1':y_up, 'y2':y_down}
+            rightline = {'x':x_right, 'y1':y_up, 'y2':y_down}
+            linelist = [leftline, rightline]
+        return linelist
+    
 # sound_speed = 343.1 # скорость звука в студии (воздух, температура 20C, давление 1А)
 # standing_wave = sound_speed / (l * 2) # формула стоячей волны
     

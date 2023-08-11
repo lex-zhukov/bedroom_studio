@@ -64,6 +64,8 @@ def add_check_points(lst, a1, a2, a, b): # добавляет дополните
                 i += 0.01
 
 def ex_through(lst, checked_area, wall_area):
+    # вычисляет зоны с насквозь проходящей стеной, выделяет их в отдельный список
+    # можно заменить функцию на универсальную и не использовать (сложная)
     global v_areas
     global h_areas
     x1_z1 = min([wall_area.get_coordinate('x1'), wall_area.get_coordinate('x2')]) 
@@ -90,6 +92,112 @@ def ex_through(lst, checked_area, wall_area):
             excluded_h_areas.append(checked_area)
         else:
             return  
+
+def ex_areas(lst, zone):
+    wallcheck_areas = []
+    excluding = zone.exclude()
+    for area in all_areas:
+        over_result = area.point_belongs(excluding[0]['x'], excluding[0]['y'])
+        if over_result == True:
+            break
+    for area in all_areas:
+        under_result = area.point_belongs(excluding[1]['x'], excluding[1]['y'])
+        if under_result == True:
+            break
+    for area in all_areas:
+        right_result = area.point_belongs(excluding[2]['x'], excluding[2]['y'])
+        if right_result == True:
+            break
+    for area in all_areas:
+        left_result = area.point_belongs(excluding[3]['x'], excluding[3]['y'])
+        if left_result == True:
+            break
+    summ = int(over_result) + int(under_result) + int(left_result) + int(right_result)
+    if summ == 3:
+        x_es = [(zone.get_coordinate('x1')), zone.get_coordinate('x2')]
+        y_es = [(zone.get_coordinate('y1')), zone.get_coordinate('y2')]
+        if over_result == False:
+            wx_min = min(x_es) + 0.01 
+            wx_max = max(x_es) - 0.01
+            wy_min = max(y_es) - 0.01
+            wy_max = max(y_es) + 0.01
+        elif under_result == False:
+            wx_min = min(x_es) + 0.01 
+            wx_max = max(x_es) - 0.01
+            wy_min = min(y_es) - 0.01
+            wy_max = min(y_es) + 0.01
+        elif right_result == False:
+            wx_min = max(x_es) + 0.01 
+            wx_max = max(x_es) - 0.01
+            wy_min = min(y_es) + 0.01
+            wy_max = max(y_es) - 0.01
+        elif left_result == False:
+            wx_min = min(x_es) + 0.01 
+            wx_max = min(x_es) - 0.01
+            wy_min = min(y_es) + 0.01
+            wy_max = max(y_es) - 0.01
+        wallcheck_areas.append(Area(wx_min, wx_max, wy_min, wy_max))
+    else:
+        text = 'зона не outside'
+        print('.......................')
+        zone.prnt()
+        print(text)
+        print('.......................')
+        return
+
+    zone.prnt()
+    print(over_result)
+    print(under_result)
+    print(right_result)
+    print(left_result)
+    wallcheck_areas[0].prnt()
+    for point in check_points:
+        ask = wallcheck_areas[0].point_belongs(point['x'], point['y'])
+        if ask == True:
+            print('стена есть: ')
+            zone.prnt()
+            print('.......................')
+            wallcheck_areas.clear()
+            break
+    else:
+        lst.append(zone)
+
+def empty_check(area, dir, wall): # функция проверяет зоны на находжение в них стен
+    lines = area.get_lines(dir)   # и распределяет их по спискам для фильтрации
+    result = []
+    if dir == 'v':
+        a = lines[0] # upline
+        b = wall
+    elif dir == 'h':
+        b = lines[0] # leftline
+        a = wall
+    for i in range(2):
+        if ((max([b['y1'], b['y2']]) > a['y'] > min([b['y1'], b['y2']])) and
+            (max([a['x1'], a['x2']]) > b['x'] > min([a['x1'], a['x2']]))):
+            res = True
+        else:
+            res = False
+        if dir == 'v':
+            a = lines[1] # downline
+        elif dir == 'h':
+            b = lines[1] # rightline
+        result.append(res)
+    if sum(result) == 0:
+        return
+    elif sum(result) == 2:
+        outside_areas.append(area)
+    elif sum(result) == 1:
+        outside_areas.append(area)
+        if dir == 'v':
+            if result[0] == False:
+                downcut_areas.append(area)
+            elif result[1] == False:
+                upcut_areas.append(area)
+        if dir == 'h':
+            if result[0] == False:
+                rightcut_areas.append(area)
+            elif result[1] == False:
+                leftcut_areas.append(area)
 
 points = [{'x': 0.0, 'y': 0.0}, {'x': 0.0, 'y': 3.0}, {'x': 0.5, 'y': 3.0}, {'x': 0.5, 'y': 4.5}, {'x': 1.5, 'y': 4.5}, {'x': 1.5, 'y': 1.0}, {'x': 2.0, 'y': 1.0}, {'x': 2.0, 'y': 6.0}, {'x': 5.0, 'y': 6.0}, {'x': 5.0, 'y': 4.5}, {'x': 6.0, 'y': 4.5}, {'x': 6.0, 'y': 2.5}, {'x': 4.0, 'y': 2.5}, {'x': 4.0, 'y': 0.0}]
 # этот со стеной в зоне (14)
@@ -162,95 +270,63 @@ for point in points:
 add_check_points(vertical_walls, 'y1', 'y2', 'y', 'x')
 add_check_points(horizontal_walls, 'x1', 'x2', 'x', 'y')
 
+upcut_areas = []
+downcut_areas = []
+leftcut_areas = []
+rightcut_areas = []
+outside_areas = []
 outside_v_areas = []
 outside_h_areas = []
-excluded_v_areas = []
-excluded_h_areas = []
-
-def ex_areas(lst, zone):
-    wallcheck_areas = []
-    excluding = zone.exclude()
-    for area in all_areas:
-        over_result = area.point_belongs(excluding[0]['x'], excluding[0]['y'])
-        if over_result == True:
-            break
-    for area in all_areas:
-        under_result = area.point_belongs(excluding[1]['x'], excluding[1]['y'])
-        if under_result == True:
-            break
-    for area in all_areas:
-        right_result = area.point_belongs(excluding[2]['x'], excluding[2]['y'])
-        if right_result == True:
-            break
-    for area in all_areas:
-        left_result = area.point_belongs(excluding[3]['x'], excluding[3]['y'])
-        if left_result == True:
-            break
-    summ = int(over_result) + int(under_result) + int(left_result) + int(right_result)
-    if summ == 3:
-        x_es = [(zone.get_coordinate('x1')), zone.get_coordinate('x2')]
-        y_es = [(zone.get_coordinate('y1')), zone.get_coordinate('y2')]
-        if over_result == False:
-            wx_min = min(x_es) + 0.01 
-            wx_max = max(x_es) - 0.01
-            wy_min = max(y_es) - 0.01
-            wy_max = max(y_es) + 0.01
-        elif under_result == False:
-            wx_min = min(x_es) + 0.01 
-            wx_max = max(x_es) - 0.01
-            wy_min = min(y_es) - 0.01
-            wy_max = min(y_es) + 0.01
-        elif right_result == False:
-            wx_min = max(x_es) + 0.01 
-            wx_max = max(x_es) - 0.01
-            wy_min = min(y_es) + 0.01
-            wy_max = max(y_es) - 0.01
-        elif left_result == False:
-            wx_min = min(x_es) + 0.01 
-            wx_max = min(x_es) - 0.01
-            wy_min = min(y_es) + 0.01
-            wy_max = max(y_es) - 0.01
-        wallcheck_areas.append(Area(wx_min, wx_max, wy_min, wy_max))
-    else:
-        text = 'зона не outside'
-        print('.......................')
-        zone.prnt()
-        print(text)
-        print('.......................')
-        return
-
-    zone.prnt()
-    print(over_result)
-    print(under_result)
-    print(right_result)
-    print(left_result)
-    wallcheck_areas[0].prnt()
-    for point in check_points:
-        ask = wallcheck_areas[0].point_belongs(point['x'], point['y'])
-        if ask == True:
-            print('стена есть: ')
-            zone.prnt()
-            print('.......................')
-            wallcheck_areas.clear()
-            break
-    else:
-        lst.append(zone)
+# excluded_v_areas = []
+# excluded_h_areas = []
 
 all_areas = v_areas + h_areas
+check_number = len(all_areas)//2 # количество проверок зон на outside
 
-for zone in v_areas:
-    ex_areas(outside_v_areas, zone)
-for zone in h_areas:
-    ex_areas(outside_h_areas, zone)
+for i in range(check_number): # повторяем проверки на outside, чтобы исключить 
+                              # стены внутри стен в нескольких уровнях
+    for zone in v_areas: # выделяем зоны outside в списках зон
+        ex_areas(outside_v_areas, zone)
+    for zone in h_areas:
+        ex_areas(outside_h_areas, zone)
+    for zone in outside_v_areas: # удаляем зоны outside из списков зон
+        v_areas.remove(zone)
+    for zone in outside_h_areas:
+        h_areas.remove(zone)
+    outside_v_areas.clear() # очищаем списки зон outside для исключения ошибок
+    outside_h_areas.clear() # при следующем удалении
+
+for area in v_areas: # проверяем зоны на наличие стен
+    for wall in vertical_walls:
+        empty_check(area, 'v', wall)
+
+for area in h_areas: # проверяем зоны на наличие стен
+    for wall in horizontal_walls:
+        empty_check(area, 'h', wall)
+
+# убираем дубликаты из списков для фильтрации, переопределяем списки:
+
+upcut_areas = list(set(upcut_areas))
+downcut_areas = list(set(downcut_areas))
+leftcut_areas = list(set(leftcut_areas))
+rightcut_areas = list(set(rightcut_areas))
+outside_areas = list(set(outside_areas))
+
+print(upcut_areas)
+print(downcut_areas)
+print(leftcut_areas)
+print(rightcut_areas)
+print(outside_areas)
 
 
-for zone in outside_v_areas:
-    for area in v_areas:
-        ex_through(v_areas, area, zone)
+
+# for zone in outside_v_areas:
+#     for area in v_areas:
+#         ex_through(v_areas, area, zone)
     
-print('excluded zones:')
-for area in outside_areas:
-    area.prnt()
+# print('excluded zones:')
+# for area in outside_areas:
+#     area.prnt()
 
 
 
