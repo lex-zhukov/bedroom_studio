@@ -1,6 +1,6 @@
-from class_file import Area
-from class_file import Workarea
-from class_file import Sweet_spot
+from class_file_new import Area
+from class_file_new import Workarea
+from class_file_new import Sweet_spot
 
 def walls(a, b):
     c_1 = (points[a]['x'])
@@ -164,26 +164,27 @@ def ex_areas(lst, zone):
     else:
         lst.append(zone)
 
-def empty_check(area, dir, wall): # функция проверяет зоны на находжение в них стен
+def empty_check(area, dir, wall_list): # функция проверяет зоны на находжение в них стен
     lines = area.get_lines(dir)   # и распределяет их по спискам для фильтрации
-    result = []
-    if dir == 'v':
-        a = lines[0] # upline
-        b = wall
-    elif dir == 'h':
-        b = lines[0] # leftline
-        a = wall
-    for i in range(2):
-        if ((max([b['y1'], b['y2']]) > a['y'] > min([b['y1'], b['y2']])) and
-            (max([a['x1'], a['x2']]) > b['x'] > min([a['x1'], a['x2']]))):
-            res = True
-        else:
-            res = False
+    result = [False, False]
+    for wall in wall_list:
         if dir == 'v':
-            a = lines[1] # downline
+            a = lines[0] # upline
+            b = wall
         elif dir == 'h':
-            b = lines[1] # rightline
-        result.append(res)
+            b = lines[0] # leftline
+            a = wall
+        for i in range(2):
+            if ((max([b['y1'], b['y2']]) > a['y'] > min([b['y1'], b['y2']])) and
+                (max([a['x1'], a['x2']]) > b['x'] > min([a['x1'], a['x2']]))):
+                res = True
+            else:
+                res = False
+            if dir == 'v':
+                a = lines[1] # downline
+            elif dir == 'h':
+                b = lines[1] # rightline
+            result[i] = bool(result[i] + res)
     if sum(result) == 0:
         return
     elif sum(result) == 2:
@@ -200,12 +201,11 @@ def empty_check(area, dir, wall): # функция проверяет зоны �
                 rightcut_areas.append(area)
             elif result[1] == False:
                 leftcut_areas.append(area)
+    return result
 
-points = [{'x': 0.0, 'y': 0.0}, {'x': 0.0, 'y': 3.0}, {'x': 0.5, 'y': 3.0}, {'x': 0.5, 'y': 4.5}, {'x': 1.5, 'y': 4.5}, {'x': 1.5, 'y': 1.0}, {'x': 2.0, 'y': 1.0}, {'x': 2.0, 'y': 6.0}, {'x': 5.0, 'y': 6.0}, {'x': 5.0, 'y': 4.5}, {'x': 6.0, 'y': 4.5}, {'x': 6.0, 'y': 2.5}, {'x': 4.0, 'y': 2.5}, {'x': 4.0, 'y': 0.0}]
-# этот со стеной в зоне
-# points = [{'x': 0.0, 'y': 0.0}, {'x': 0.0, 'y': 3.0}, {'x': 0.5, 'y': 3.0}, {'x': 0.5, 'y': 4.5}, {'x': 2.0, 'y': 4.5}, {'x': 2.0, 'y': 6.0}, {'x': 5.0, 'y': 6.0}, {'x': 5.0, 'y': 4.5}, {'x': 6.0, 'y': 4.5}, {'x': 6.0, 'y': 2.5}, {'x': 4.0, 'y': 2.5}, {'x': 4.0, 'y': 0.0}]
-#points = [{'x': 0.0, 'y': 0.0}, {'x': 0.0, 'y': 2.0}, {'x': 0.5, 'y': 2.0}, {'x': 0.5, 'y': 3.5}, {'x': 2.0, 'y': 3.5}, {'x': 2.0, 'y': 5.0}, {'x': 5.0, 'y': 5.0}, {'x': 5.0, 'y': 3.5}, {'x': 6.0, 'y': 3.5}, {'x': 6.0, 'y': 1.5}, {'x': 4.0, 'y': 1.5}, {'x': 4.0, 'y': 0.0}]
-check_points = [{'x': 2.0, 'y': 1.0}]
+#points = [{'x': 0.0, 'y': 0.0}, {'x': 0.0, 'y': 3.0}, {'x': 0.5, 'y': 3.0}, {'x': 0.5, 'y': 4.5}, {'x': 1.5, 'y': 4.5}, {'x': 1.5, 'y': 1.0}, {'x': 2.0, 'y': 1.0}, {'x': 2.0, 'y': 6.0}, {'x': 5.0, 'y': 6.0}, {'x': 5.0, 'y': 4.5}, {'x': 6.0, 'y': 4.5}, {'x': 6.0, 'y': 2.5}, {'x': 4.0, 'y': 2.5}, {'x': 4.0, 'y': 0.0}]
+points = [{'x': 0.0, 'y': 0.0}, {'x': 0.0, 'y': 3.0}, {'x': 3.0, 'y': 3.0}, {'x': 3.0, 'y': 2.0}, {'x':3.5, 'y': 2.0}, {'x': 3.5, 'y': 1.5}, {'x': 4.0, 'y': 1.5}, {'x': 4.0, 'y': 3.0}, {'x': 5.0, 'y': 3.0}, {'x': 5.0, 'y': 1.0}, {'x': 4.0, 'y': 1.0}, {'x':4.0, 'y': 0.5}, {'x': 5.0, 'y': 0.5}, {'x': 5.0, 'y': 0.0}]
+check_points = []
 vertical_walls = []
 horizontal_walls = []
 v_areas = []
@@ -215,8 +215,6 @@ distance = 0
 wall_number = 0
 while wall_number < 4:
     wall_number = int(input("Введите число стен (4 или больше): "))
-
-# получаем точки углов (предполагается интерфейс, где их можно отметить на координатном поле):
 
 # for i in range(wall_number):
 #    i += 1
@@ -230,9 +228,6 @@ z = 0
 while z < wall_number:
     walls(z - 1, z)
     z += 1
-
-# print(vertical_walls)
-# print(horizontal_walls)
 
 # выделяем зоны для расчета стоячих волн:
 
@@ -280,25 +275,9 @@ for area in all_areas:
     downdots.append(dots[1])
     leftdots.append(dots[2])
     rightdots.append(dots[3])
-    
-check_number = len(all_areas)//2 # количество проверок зон на outside
-
-for i in range(check_number): # повторяем проверки на outside, чтобы исключить 
-                              # стены внутри стен в нескольких уровнях
-    for zone in v_areas: # выделяем зоны outside в списках зон
-        ex_areas(outside_v_areas, zone)
-    for zone in h_areas:
-        ex_areas(outside_h_areas, zone)
-    for zone in outside_v_areas: # удаляем зоны outside из списков зон
-        v_areas.remove(zone)
-    for zone in outside_h_areas:
-        h_areas.remove(zone)
-    outside_v_areas.clear() # очищаем списки зон outside для исключения ошибок
-    outside_h_areas.clear() # при следующем удалении
 
 for area in v_areas: # проверяем зоны на наличие стен
-    for wall in vertical_walls:
-        empty_check(area, 'v', wall)
+    empty_check(area, 'v', vertical_walls)
 # убираем дубликаты из списков для фильтрации, переопределяем списки:
 upcut_areas = list(set(upcut_areas))
 downcut_areas = list(set(downcut_areas))
@@ -309,15 +288,14 @@ for area in outside_areas:
 outside_areas.clear()    
 
 for area in h_areas: # проверяем зоны на наличие стен
-    for wall in horizontal_walls:
-        empty_check(area, 'h', wall)
+    empty_check(area, 'h', horizontal_walls)
 # убираем дубликаты из списков для фильтрации, переопределяем списки:
 leftcut_areas = list(set(leftcut_areas))
 rightcut_areas = list(set(rightcut_areas))
 outside_areas = list(set(outside_areas))
 # удаляем лишние зоны
 for area in outside_areas:
-    v_areas.remove(area)
+    h_areas.remove(area)
 outside_areas.clear()
 
 # переделываем зоны с дефектами (заходящей стеной):
@@ -397,6 +375,23 @@ for area in rightcut_areas: # для зон со стеной справа
 for area in rightcut_areas:
     h_areas.append(area)
     dots_check.clear()        
+
+check_number = len(all_areas)//2 # количество проверок зон на outside
+
+for i in range(check_number): # повторяем проверки на outside, чтобы исключить 
+                              # стены внутри стен в нескольких уровнях
+    for zone in v_areas: # выделяем зоны outside в списках зон
+        ex_areas(outside_v_areas, zone)
+    for zone in h_areas:
+        ex_areas(outside_h_areas, zone)
+    for zone in outside_v_areas: # удаляем зоны outside из списков зон
+        v_areas.remove(zone)
+    for zone in outside_h_areas:
+        h_areas.remove(zone)
+    outside_v_areas.clear() # очищаем списки зон outside для исключения ошибок
+    outside_h_areas.clear() # при следующем удалении
+    all_areas.clear()
+    all_areas = v_areas + h_areas
 
 print('----------------')
 for area in v_areas:
