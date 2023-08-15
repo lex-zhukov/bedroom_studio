@@ -164,14 +164,14 @@ def ex_areas(lst, zone):
     else:
         lst.append(zone)
 
-def empty_check(area, dir, wall_list): # функция проверяет зоны на находжение в них стен
-    lines = area.get_lines(dir)   # и распределяет их по спискам для фильтрации
+def empty_check(area, direction, wall_list): # функция проверяет зоны на находжение в них стен
+    lines = area.get_lines(direction)   # и распределяет их по спискам для фильтрации
     result = [False, False]
     for wall in wall_list:
-        if dir == 'v':
+        if direction == 'v':
             a = lines[0] # upline
             b = wall
-        elif dir == 'h':
+        elif direction == 'h':
             b = lines[0] # leftline
             a = wall
         for i in range(2):
@@ -180,9 +180,9 @@ def empty_check(area, dir, wall_list): # функция проверяет зо�
                 res = True
             else:
                 res = False
-            if dir == 'v':
+            if direction == 'v':
                 a = lines[1] # downline
-            elif dir == 'h':
+            elif direction == 'h':
                 b = lines[1] # rightline
             result[i] = bool(result[i] + res)
     if sum(result) == 0:
@@ -191,12 +191,12 @@ def empty_check(area, dir, wall_list): # функция проверяет зо�
         outside_areas.append(area)
     elif sum(result) == 1:
         outside_areas.append(area)
-        if dir == 'v':
+        if direction == 'v':
             if result[0] == False:
                 downcut_areas.append(area)
             elif result[1] == False:
                 upcut_areas.append(area)
-        if dir == 'h':
+        if direction == 'h':
             if result[0] == False:
                 rightcut_areas.append(area)
             elif result[1] == False:
@@ -439,7 +439,7 @@ print(room_size, "m2")
 vertical_walls_AS = []
 horizontal_walls_AS = []
 ss = Sweet_spot(0, 0) # объявление экземпляра класса точки прослушивания
-wa = Workarea(0, 0, 0, 0) # объявление экземпляра класса зоны прослушивания
+wa = Workarea(0, 0, 0, 0, '0') # объявление экземпляра класса зоны прослушивания
 
 def wall_length(wall):
     global l
@@ -483,27 +483,73 @@ def wa_filter(wall):
             b = wall['x'] + distance + (0.249 * l)               # x2
             c = wall_center - (0.749 * l)                        # y1
             d = wall_center + (0.749 * l)                        # y2
-            # по вертикальным справа от стены
+            # по вертикальным слева от стены
             e = wall['x'] - 0.001                                # x1
             f = wall['x'] - distance - (0.249 * l)               # x2
-            potencial_wa_v.append(Area(a, b, c, d))
-            potencial_wa_v.append(Area(e, f, c, d))
+            potencial_wa_v.append(Workarea(a, b, c, d, 'left'))
+            potencial_wa_v.append(Workarea(e, f, c, d, 'right'))
     except KeyError:
         # по горизонтали сверху от стены
         wall_center = abs(wall['x1'] - wall['x2'])/2 + min([wall['x1'], wall['x2']])
         distance = ((l**2 - (0.5*l)**2)**0.5) + (0.25 * l)
-        # РАБОТАТЬ ОТСЮДА, ПРОВЕРИТЬ ВСЕ ЧТО ДАЛЬШЕ
-        a = wall['x'] + 0.001                                # x1
-        b = wall['x'] + distance + (0.249 * l)               # x2
-        c = wall_center - (0.749 * l)                        # y1
-        d = wall_center + (0.749 * l)                        # y2        
-    
+        a = wall_center - (0.749 * l)                        # x1
+        b = wall_center + (0.749 * l)                        # x2
+        c = wall['y'] + 0.001                                # y1
+        d = wall['y'] + distance + (0.249 * l)               # y2
+        # по горизонтали снизу от стены
+        e = wall['y'] - 0.001                                # y1
+        f = wall['y'] - distance - (0.249 * l)               # y2
+        potencial_wa_h.append(Workarea(a, b, c, d, 'down'))
+        potencial_wa_h.append(Workarea(a, b, e, f, 'up'))
 
+# делаем потенциальные зоны с помощью функции
 
+for wall in vertical_walls_AS:
+    wa_filter(wall)
 
+for wall in horizontal_walls_AS:
+    wa_filter(wall)
 
+# вывод (для отладки)
+for area in potencial_wa_v:
+    area.prnt()
+print('...........1')
+for area in potencial_wa_h:
+    area.prnt()
 
+# проверим, находятся ли фокусы зон в комнате, и нет ли в зонах преград
+def area_pass(area, lst): # функция для проверки потенциальных зон в подходящие
+    focus = area.focus()
+    for zone in all_areas:
+        val_1 = zone.point_belongs(focus['x'], focus['y'])
+        if val_1 == True:
+            break
+    if val_1 == False:
+        return
+    else:
+        for point in check_points:
+            val_2 = area.point_belongs(point['x'], point['y'])
+            if val_2 == True:
+                return
+        if val_2 == False:
+            lst.append(area)
 
+passed_wa_v = []
+passed_wa_h = []
+
+for area in potencial_wa_v:
+    area_pass(area, passed_wa_v)
+
+for area in potencial_wa_h:
+    area_pass(area, passed_wa_h)
+
+# вывод (для отладки)
+print('...........2')
+for area in passed_wa_v:
+    area.prnt()
+print('...........2')
+for area in passed_wa_h:
+    area.prnt()
 
 
 

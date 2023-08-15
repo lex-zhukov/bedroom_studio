@@ -102,17 +102,21 @@ class Area:
 
 class Workarea(Area):
     
-    def __init__(self, x1, x2, y1, y2):
+    def __init__(self, x1, x2, y1, y2, direction):
         self.coordinate_x1 = x1
         self.coordinate_x2 = x2
         self.coordinate_y1 = y1
         self.coordinate_y2 = y2
+        self.direction = direction
+    
+    def prnt(self):
+        print(f"x1 = {self.coordinate_x1}, x2 = {self.coordinate_x2}, y1 = {self.coordinate_y1}, y2 = {self.coordinate_y2}, dir = {self.direction}")
         
-    def set_area(self, lst):
-        self.coordinate_x1 = lst[0]
-        self.coordinate_x2 = lst[1]
-        self.coordinate_y1 = lst[2]
-        self.coordinate_y2 = lst[3]
+    # def set_area(self, lst):
+    #     self.coordinate_x1 = lst[0]
+    #     self.coordinate_x2 = lst[1]
+    #     self.coordinate_y1 = lst[2]
+    #     self.coordinate_y2 = lst[3]
         
 class Sweet_spot(object):
     
