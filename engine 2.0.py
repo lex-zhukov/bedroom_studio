@@ -600,6 +600,7 @@ def pan_center(area):
     maxx = max([area.get_coordinate('x1'), area.get_coordinate('x2')])
     minx = min([area.get_coordinate('x1'), area.get_coordinate('x2')])
     if direction == ('up' or 'down'):
+        # pan_dir = v
         if direction == 'up':
             inv = -1
             target = {'x':focus['x'], 'y':maxy}
@@ -620,6 +621,7 @@ def pan_center(area):
         pan_5 = {'x':positions[2], 'y':sweet_spot['y']}
         pan_6 = {'x':positions[3], 'y':sweet_spot['y']}
     elif direction == ('left' or 'right'):
+        # pan_dir = h
         if direction == 'right':
             inv = -1
             target = {'y':focus['y'], 'x':maxx}
@@ -639,8 +641,16 @@ def pan_center(area):
         pan_4 = {'y':positions[1], 'x':(sweet_spot['x'] - (inv * midpoint))}
         pan_5 = {'y':positions[2], 'x':sweet_spot['x']}
         pan_6 = {'y':positions[3], 'x':sweet_spot['x']}
-    panels_dots = [sweet_spot, target, pan_1, pan_2, pan_3, pan_4, pan_5, pan_6]
-    return panels_dots
+    dots = [area, sweet_spot, target]
+    panels_4_check = [pan_3, pan_4, pan_5, pan_6]
+    
+    # добавить сюда проверку панелей 3456 на points, 1 и 2 и так не попадут (pan_dir = v/h)
+    # если нет points в зонах панелей, то добавляем в список вариантов все атрибуты зоны
+    # return panels_dots
+    
+    # в сайд панелях нужно проверить панели, если края панели в одной зоне или вне зон, то
+    # она ставится, если в двух, то не ставится
+    # если панелей меньше двух, то вариант выкидывается
             
 
         
