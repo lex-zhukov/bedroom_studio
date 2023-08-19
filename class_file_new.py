@@ -109,6 +109,10 @@ class Workarea(Area):
         self.coordinate_y2 = y2
         self.direction = direction
     
+    def get_direction(self):
+        direction = self.direction
+        return direction
+    
     def prnt(self):
         print(f"x1 = {self.coordinate_x1}, x2 = {self.coordinate_x2}, y1 = {self.coordinate_y1}, y2 = {self.coordinate_y2}, dir = {self.direction}")
         

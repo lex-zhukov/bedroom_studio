@@ -49,52 +49,52 @@ def wall_overlap_comparison(a, b, c, d, lst, v1, v2):
         # return 0
         # нет наложения.  
 
-def ss_location_support(val, val_0, ss_first, ss_second):
-    point_check = {val:ss_first, val_0:ss_second}
-    for area in v_areas:
-        check = area.point_belongs(point_check[val], point_check[val_0])
-        if check == True:
-            if val == 'x':
-                ss.set_location(ss_first, ss_second)
-            elif val == 'y':
-                ss.set_location(ss_second, ss_first)
+# def ss_location_support(val, val_0, ss_first, ss_second):
+#     point_check = {val:ss_first, val_0:ss_second}
+#     for area in v_areas:
+#         check = area.point_belongs(point_check[val], point_check[val_0])
+#         if check == True:
+#             if val == 'x':
+#                 ss.set_location(ss_first, ss_second)
+#             elif val == 'y':
+#                 ss.set_location(ss_second, ss_first)
 
-def ss_location():
-    global distance
-    if chosen_lst == horizontal_walls:
-        val = 'x'
-        val_0 = 'y'
-        val_1 = 'x1'
-        val_2 = 'x2'
-    elif chosen_lst == vertical_walls:
-        val = 'y'
-        val_0 = 'x'
-        val_1 = 'y1'
-        val_2 = 'y2'    
+# def ss_location():
+#     global distance
+#     if chosen_lst == horizontal_walls:
+#         val = 'x'
+#         val_0 = 'y'
+#         val_1 = 'x1'
+#         val_2 = 'x2'
+#     elif chosen_lst == vertical_walls:
+#         val = 'y'
+#         val_0 = 'x'
+#         val_1 = 'y1'
+#         val_2 = 'y2'    
 
-    if chosen_lst[step - 1][val_1] < chosen_lst[step - 1][val_2]:
-        ss_first = chosen_lst[step - 1][val_1] + (0.5 * wall_length)
-    else:
-        ss_first = chosen_lst[step - 1][val_1] - (0.5 * wall_length)
-    distance = ((l**2 - (0.5*l)**2)**0.5) + (0.25 * l)
+#     if chosen_lst[step - 1][val_1] < chosen_lst[step - 1][val_2]:
+#         ss_first = chosen_lst[step - 1][val_1] + (0.5 * wall_length)
+#     else:
+#         ss_first = chosen_lst[step - 1][val_1] - (0.5 * wall_length)
+#     distance = ((l**2 - (0.5*l)**2)**0.5) + (0.25 * l)
 
-    ss_second = chosen_lst[step - 1][val_0] - distance
-    ss_location_support(val, val_0, ss_first, ss_second)
-    ss_second = chosen_lst[step - 1][val_0] + distance
-    ss_location_support(val, val_0, ss_first, ss_second)
+#     ss_second = chosen_lst[step - 1][val_0] - distance
+#     ss_location_support(val, val_0, ss_first, ss_second)
+#     ss_second = chosen_lst[step - 1][val_0] + distance
+#     ss_location_support(val, val_0, ss_first, ss_second)
 
-def target_search():
-    try:
-        target_add = [chosen_wall['x1'], chosen_wall['x2']]
-        target_x = (abs(chosen_wall['x2'] - chosen_wall['x1'])/2) + min(target_add)
-        target_y = chosen_wall['y']
-        target = {'x':target_x, 'y':target_y}
-    except KeyError:
-        target_add = [chosen_wall['y1'], chosen_wall['y2']]
-        target_y = (abs(chosen_wall['y2'] - chosen_wall['y1'])/2) + min(target_add)
-        target_x = chosen_wall['x']
-        target = {'x':target_x, 'y':target_y}
-    return target
+# def target_search():
+#     try:
+#         target_add = [chosen_wall['x1'], chosen_wall['x2']]
+#         target_x = (abs(chosen_wall['x2'] - chosen_wall['x1'])/2) + min(target_add)
+#         target_y = chosen_wall['y']
+#         target = {'x':target_x, 'y':target_y}
+#     except KeyError:
+#         target_add = [chosen_wall['y1'], chosen_wall['y2']]
+#         target_y = (abs(chosen_wall['y2'] - chosen_wall['y1'])/2) + min(target_add)
+#         target_x = chosen_wall['x']
+#         target = {'x':target_x, 'y':target_y}
+#     return target
 
 def add_check_points(lst, a1, a2, a, b): # добавляет дополнительные точки в
     for wall in lst:                     # стены для проверки рабочй зоны на препятствия
@@ -438,7 +438,17 @@ print(room_size, "m2")
 
 vertical_walls_AS = []
 horizontal_walls_AS = []
+
+
+#########################################################################################
+#########################################################################################
+# А НАДО ЛИ ВООБЩЕ СВИТСПОТ КАК КЛАСС ТО ИМЕТЬ ТЕПЕРЬ???????????????????????????????????
+#########################################################################################
+#########################################################################################
 ss = Sweet_spot(0, 0) # объявление экземпляра класса точки прослушивания
+
+
+
 wa = Workarea(0, 0, 0, 0, '0') # объявление экземпляра класса зоны прослушивания
 
 def wall_length(wall):
@@ -551,10 +561,92 @@ print('...........2')
 for area in passed_wa_h:
     area.prnt()
 
+##########################################################################################
+# ДАЛЕЕ МЫ ОБЪЯВЛЯЕМ ФУНКЦИИ ДЛЯ РАССТАНОВКИ ПАНЕЛЕЙ, ПРОВЕРЯЕМ И СНОВА ВИКИДЫВАЕМ ЗОНЫ,
+# КОТОРЫЕ НАМ НЕ ПОДХОДЯТ. ПОСЛЕ ЭТОГО ПОЛУЧАЕМ ОКОНЧАТЕЛЬНЫЙ СПИСОК ВАРИАНТОВ (ИХ ЧИСЛО)
+##########################################################################################
 
-
-
-
+def pan_center(area):
+    def area_search(lst, val):
+        for zone in lst:
+            val_1 = zone.point_belongs(midpoint_dot['x'], midpoint_dot['y'])
+            if val_1 == True:
+                area_34 = zone
+            val_2 = zone.point_belongs(sweet_spot['x'], sweet_spot['y'])
+            if val_2 == True:
+                area_56 = zone
+        areas = [area_34, area_56]
+        result = areas[val]
+        return result
+    direction = area.get_direction()
+    focus = area.focus()
+    distance = ((l**2 - (0.5*l)**2)**0.5) + (0.25 * l)
+    midpoint = (((distance - (l / 4)) / 4) * 3)
+    maxy = max([area.get_coordinate('y1'), area.get_coordinate('y2')])
+    miny = min([area.get_coordinate('y1'), area.get_coordinate('y2')])
+    maxx = max([area.get_coordinate('x1'), area.get_coordinate('x2')])
+    minx = min([area.get_coordinate('x1'), area.get_coordinate('x2')])
+    if direction == ('up' or 'down'):
+        if direction == 'up':
+            inv = -1
+            target = {'x':focus['x'], 'y':maxy}
+            sweet_spot = {'x':focus['x'], 'y':(maxy - distance)}
+            midpoint_dot = {'x':focus['x'], 'y':(maxy - distance + midpoint)}
+        elif direction == 'down':
+            inv = 1
+            target = {'x':focus['x'], 'y':miny}
+            sweet_spot = {'x':focus['x'], 'y':(miny + distance)}
+            midpoint_dot = {'x':focus['x'], 'y':(miny + distance - midpoint)}
+        area_34 = area_search(v_areas, 0)
+        area_56 = area_search(v_areas, 1)
+        x_min_34 = min([area_34.get_coordinate('x1'), area_34.get_coordinate('x2')])
+        x_max_34 = max([area_34.get_coordinate('x1'), area_34.get_coordinate('x2')])
+        x_min_56 = min([area_56.get_coordinate('x1'), area_56.get_coordinate('x2')])
+        x_max_56 = max([area_56.get_coordinate('x1'), area_56.get_coordinate('x2')])
+        pan_1 = {'x':(focus['x'] - (0.5 * l)), 'y':target['y']}
+        pan_2 = {'x':(focus['x'] + (0.5 * l)), 'y':target['y']}
+        pan_3 = {'x':x_min_34, 'y':(sweet_spot['y'] - (inv * midpoint))}
+        pan_4 = {'x':x_max_34, 'y':(sweet_spot['y'] - (inv * midpoint))}
+        pan_5 = {'x':x_min_56, 'y':sweet_spot['y']}
+        pan_6 = {'x':x_max_56, 'y':sweet_spot['y']}
+    elif direction == ('left' or 'right'):
+        if direction == 'right':
+            inv = -1
+            target = {'y':focus['y'], 'x':maxx}
+            sweet_spot = {'y':focus['y'], 'x':(maxx - distance)}
+            midpoint_dot = {'y':focus['y'], 'x':(maxx - distance + midpoint)}
+        elif direction == 'left':
+            inv = 1
+            target = {'y':focus['y'], 'x':minx}
+            sweet_spot = {'y':focus['y'], 'x':(minx + distance)}
+            midpoint_dot = {'y':focus['y'], 'x':(minx + distance - midpoint)}
+        area_34 = area_search(v_areas, 0)
+        area_56 = area_search(v_areas, 1)
+        y_min_34 = min([area_34.get_coordinate('y1'), area_34.get_coordinate('y2')])
+        y_max_34 = max([area_34.get_coordinate('y1'), area_34.get_coordinate('y2')])
+        y_min_56 = min([area_56.get_coordinate('y1'), area_56.get_coordinate('y2')])
+        y_max_56 = max([area_56.get_coordinate('y1'), area_56.get_coordinate('y2')])
+        pan_1 = {'y':(focus['y'] - (0.5 * l)), 'x':target['x']}
+        pan_2 = {'y':(focus['y'] + (0.5 * l)), 'x':target['x']}
+        pan_3 = {'y':y_min_34, 'x':(sweet_spot['x'] - (inv * midpoint))}
+        pan_4 = {'y':y_max_34, 'x':(sweet_spot['x'] - (inv * midpoint))}
+        pan_5 = {'y':y_min_56, 'x':sweet_spot['x']}
+        pan_6 = {'y':y_max_56, 'x':sweet_spot['x']}
+    panels = [pan_1, pan_2, pan_3, pan_4, pan_5, pan_6]
+    return panels
+            
+            
+            
+            
+    
+        
+    
+    
+    
+    
+    # elif direction == 'left':
+    # elif direction == 'right':
+        
 
 
 
