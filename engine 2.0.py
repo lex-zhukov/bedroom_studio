@@ -578,6 +578,19 @@ def pan_center(area):
         areas = [area_34, area_56]
         result = areas[val]
         return result
+    def c_3456(val):
+        if val == 'x':
+            a = 'x1'
+            b = 'x2'
+        elif val == 'y':
+            a = 'y1'
+            b = 'y2'
+        min_34 = min([area_34.get_coordinate(a), area_34.get_coordinate(b)])
+        max_34 = max([area_34.get_coordinate(a), area_34.get_coordinate(b)])
+        min_56 = min([area_56.get_coordinate(a), area_56.get_coordinate(b)])
+        max_56 = max([area_56.get_coordinate(a), area_56.get_coordinate(b)])
+        lst = [min_34, max_34, min_56, max_56]
+        return lst
     direction = area.get_direction()
     focus = area.focus()
     distance = ((l**2 - (0.5*l)**2)**0.5) + (0.25 * l)
@@ -599,16 +612,13 @@ def pan_center(area):
             midpoint_dot = {'x':focus['x'], 'y':(miny + distance - midpoint)}
         area_34 = area_search(v_areas, 0)
         area_56 = area_search(v_areas, 1)
-        x_min_34 = min([area_34.get_coordinate('x1'), area_34.get_coordinate('x2')])
-        x_max_34 = max([area_34.get_coordinate('x1'), area_34.get_coordinate('x2')])
-        x_min_56 = min([area_56.get_coordinate('x1'), area_56.get_coordinate('x2')])
-        x_max_56 = max([area_56.get_coordinate('x1'), area_56.get_coordinate('x2')])
+        positions = c_3456('x')
         pan_1 = {'x':(focus['x'] - (0.5 * l)), 'y':target['y']}
         pan_2 = {'x':(focus['x'] + (0.5 * l)), 'y':target['y']}
-        pan_3 = {'x':x_min_34, 'y':(sweet_spot['y'] - (inv * midpoint))}
-        pan_4 = {'x':x_max_34, 'y':(sweet_spot['y'] - (inv * midpoint))}
-        pan_5 = {'x':x_min_56, 'y':sweet_spot['y']}
-        pan_6 = {'x':x_max_56, 'y':sweet_spot['y']}
+        pan_3 = {'x':positions[0], 'y':(sweet_spot['y'] - (inv * midpoint))}
+        pan_4 = {'x':positions[1], 'y':(sweet_spot['y'] - (inv * midpoint))}
+        pan_5 = {'x':positions[2], 'y':sweet_spot['y']}
+        pan_6 = {'x':positions[3], 'y':sweet_spot['y']}
     elif direction == ('left' or 'right'):
         if direction == 'right':
             inv = -1
@@ -622,30 +632,17 @@ def pan_center(area):
             midpoint_dot = {'y':focus['y'], 'x':(minx + distance - midpoint)}
         area_34 = area_search(v_areas, 0)
         area_56 = area_search(v_areas, 1)
-        y_min_34 = min([area_34.get_coordinate('y1'), area_34.get_coordinate('y2')])
-        y_max_34 = max([area_34.get_coordinate('y1'), area_34.get_coordinate('y2')])
-        y_min_56 = min([area_56.get_coordinate('y1'), area_56.get_coordinate('y2')])
-        y_max_56 = max([area_56.get_coordinate('y1'), area_56.get_coordinate('y2')])
+        positions = c_3456('y')
         pan_1 = {'y':(focus['y'] - (0.5 * l)), 'x':target['x']}
         pan_2 = {'y':(focus['y'] + (0.5 * l)), 'x':target['x']}
-        pan_3 = {'y':y_min_34, 'x':(sweet_spot['x'] - (inv * midpoint))}
-        pan_4 = {'y':y_max_34, 'x':(sweet_spot['x'] - (inv * midpoint))}
-        pan_5 = {'y':y_min_56, 'x':sweet_spot['x']}
-        pan_6 = {'y':y_max_56, 'x':sweet_spot['x']}
-    panels = [pan_1, pan_2, pan_3, pan_4, pan_5, pan_6]
-    return panels
+        pan_3 = {'y':positions[0], 'x':(sweet_spot['x'] - (inv * midpoint))}
+        pan_4 = {'y':positions[1], 'x':(sweet_spot['x'] - (inv * midpoint))}
+        pan_5 = {'y':positions[2], 'x':sweet_spot['x']}
+        pan_6 = {'y':positions[3], 'x':sweet_spot['x']}
+    panels_dots = [sweet_spot, target, pan_1, pan_2, pan_3, pan_4, pan_5, pan_6]
+    return panels_dots
             
-            
-            
-            
-    
-        
-    
-    
-    
-    
-    # elif direction == 'left':
-    # elif direction == 'right':
+
         
 
 
