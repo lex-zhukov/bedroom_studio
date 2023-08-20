@@ -641,12 +641,35 @@ def pan_center(area):
         pan_4 = {'y':positions[1], 'x':(sweet_spot['x'] - (inv * midpoint))}
         pan_5 = {'y':positions[2], 'x':sweet_spot['x']}
         pan_6 = {'y':positions[3], 'x':sweet_spot['x']}
-    dots = [area, sweet_spot, target]
     panels_4_check = [pan_3, pan_4, pan_5, pan_6]
-    
-    # добавить сюда проверку панелей 3456 на points, 1 и 2 и так не попадут (pan_dir = v/h)
-    # если нет points в зонах панелей, то добавляем в список вариантов все атрибуты зоны
-    # return panels_dots
+    # дольше проверка, что панели не стоят на углах стен
+    pans_areas = []
+    for panel in panels_4_check:
+        a = panel['x']
+        b = panel['x']
+        c = panel['y']
+        d = panel['y']
+        if area.get_direction() == ('up' or 'down'):
+            pans_areas.append(Area((a - 0.003), (b + 0.003), (c - 0.3), (d + 0.3)))
+        elif area.get_direction() == ('left' or 'right'):
+            pans_areas.append(Area((a - 0.3), (b + 0.3), (c - 0.003), (d + 0.003)))
+    print('###')
+    for area in pans_areas:
+        area.prnt()
+    print('###')
+    for pa in pans_areas:
+        for point in points:
+            chk = pa.point_belongs(point['x'], point['y'])
+            if chk == True:
+                return
+    variant = [area, sweet_spot, target, pan_1, pan_2, pan_3, pan_4, pan_5, pan_6]
+    pre_variants.append(variant)
+
+
+pre_variants = [] # варианты без сайд панелей
+pan_center(passed_wa_h[0])    
+print('pre_variant: ', pre_variants)
+
     
     # в сайд панелях нужно проверить панели, если края панели в одной зоне или вне зон, то
     # она ставится, если в двух, то не ставится
