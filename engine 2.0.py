@@ -1,6 +1,5 @@
-from class_file_new import Area
-from class_file_new import Workarea
-from class_file_new import Sweet_spot
+from class_file_actual import Area
+from class_file_actual import Workarea
 
 def walls(a, b):
     c_1 = (points[a]['x'])
@@ -48,53 +47,6 @@ def wall_overlap_comparison(a, b, c, d, lst, v1, v2):
         print('not overlaped')
         # return 0
         # нет наложения.  
-
-# def ss_location_support(val, val_0, ss_first, ss_second):
-#     point_check = {val:ss_first, val_0:ss_second}
-#     for area in v_areas:
-#         check = area.point_belongs(point_check[val], point_check[val_0])
-#         if check == True:
-#             if val == 'x':
-#                 ss.set_location(ss_first, ss_second)
-#             elif val == 'y':
-#                 ss.set_location(ss_second, ss_first)
-
-# def ss_location():
-#     global distance
-#     if chosen_lst == horizontal_walls:
-#         val = 'x'
-#         val_0 = 'y'
-#         val_1 = 'x1'
-#         val_2 = 'x2'
-#     elif chosen_lst == vertical_walls:
-#         val = 'y'
-#         val_0 = 'x'
-#         val_1 = 'y1'
-#         val_2 = 'y2'    
-
-#     if chosen_lst[step - 1][val_1] < chosen_lst[step - 1][val_2]:
-#         ss_first = chosen_lst[step - 1][val_1] + (0.5 * wall_length)
-#     else:
-#         ss_first = chosen_lst[step - 1][val_1] - (0.5 * wall_length)
-#     distance = ((l**2 - (0.5*l)**2)**0.5) + (0.25 * l)
-
-#     ss_second = chosen_lst[step - 1][val_0] - distance
-#     ss_location_support(val, val_0, ss_first, ss_second)
-#     ss_second = chosen_lst[step - 1][val_0] + distance
-#     ss_location_support(val, val_0, ss_first, ss_second)
-
-# def target_search():
-#     try:
-#         target_add = [chosen_wall['x1'], chosen_wall['x2']]
-#         target_x = (abs(chosen_wall['x2'] - chosen_wall['x1'])/2) + min(target_add)
-#         target_y = chosen_wall['y']
-#         target = {'x':target_x, 'y':target_y}
-#     except KeyError:
-#         target_add = [chosen_wall['y1'], chosen_wall['y2']]
-#         target_y = (abs(chosen_wall['y2'] - chosen_wall['y1'])/2) + min(target_add)
-#         target_x = chosen_wall['x']
-#         target = {'x':target_x, 'y':target_y}
-#     return target
 
 def add_check_points(lst, a1, a2, a, b): # добавляет дополнительные точки в
     for wall in lst:                     # стены для проверки рабочй зоны на препятствия
@@ -439,18 +391,6 @@ print(room_size, "m2")
 vertical_walls_AS = []
 horizontal_walls_AS = []
 
-
-#########################################################################################
-#########################################################################################
-# А НАДО ЛИ ВООБЩЕ СВИТСПОТ КАК КЛАСС ТО ИМЕТЬ ТЕПЕРЬ???????????????????????????????????
-#########################################################################################
-#########################################################################################
-ss = Sweet_spot(0, 0) # объявление экземпляра класса точки прослушивания
-
-
-
-wa = Workarea(0, 0, 0, 0, '0') # объявление экземпляра класса зоны прослушивания
-
 def wall_length(wall):
     global l
     try:
@@ -591,6 +531,7 @@ def pan_center(area):
         max_56 = max([area_56.get_coordinate(a), area_56.get_coordinate(b)])
         lst = [min_34, max_34, min_56, max_56]
         return lst
+    wa = area
     direction = area.get_direction()
     focus = area.focus()
     distance = ((l**2 - (0.5*l)**2)**0.5) + (0.25 * l)
@@ -646,13 +587,11 @@ def pan_center(area):
     pans_areas = []
     for panel in panels_4_check:
         a = panel['x']
-        b = panel['x']
-        c = panel['y']
-        d = panel['y']
+        b = panel['y']
         if area.get_direction() == ('up' or 'down'):
-            pans_areas.append(Area((a - 0.003), (b + 0.003), (c - 0.3), (d + 0.3)))
+            pans_areas.append(Area((a - 0.003), (a + 0.003), (b - 0.3), (b + 0.3)))
         elif area.get_direction() == ('left' or 'right'):
-            pans_areas.append(Area((a - 0.3), (b + 0.3), (c - 0.003), (d + 0.003)))
+            pans_areas.append(Area((a - 0.3), (a + 0.3), (b - 0.003), (b + 0.003)))
     print('###')
     for area in pans_areas:
         area.prnt()
@@ -662,7 +601,7 @@ def pan_center(area):
             chk = pa.point_belongs(point['x'], point['y'])
             if chk == True:
                 return
-    variant = [area, sweet_spot, target, pan_1, pan_2, pan_3, pan_4, pan_5, pan_6]
+    variant = [wa, sweet_spot, target, pan_1, pan_2, pan_3, pan_4, pan_5, pan_6]
     pre_variants.append(variant)
 
 
@@ -670,12 +609,157 @@ pre_variants = [] # варианты без сайд панелей
 pan_center(passed_wa_h[0])    
 print('pre_variant: ', pre_variants)
 
-    
-    # в сайд панелях нужно проверить панели, если края панели в одной зоне или вне зон, то
-    # она ставится, если в двух, то не ставится
-    # если панелей меньше двух, то вариант выкидывается
-            
 
+##########################################################################################
+# ДАЛЕЕ ИДЕТ БОЛЬШАЯ ФУНКЦИЯ ДЛЯ СОЗДАНИЯ И ПРОВЕРКИ САЙД ПАНЕЛЕЙ В РАЗНЫХ WA
+##########################################################################################
+
+def side_panels(variant):
+    # выбираем количество сайд панелей (2, 3 или 4, от ширины wa)
+    wa_width = l * 1.5
+    if 1.8 > wa_width >= 1.5:
+        panel_number = 2
+    elif 2.4 > wa_width >= 1.8:
+
+    elif wa_width >= 2.4:
+#*****************************************************************************************
+# ВЕРТИКАЛЬНЫЙ ВАРИАНТ ДЛЯ 4 ПАНЕЛЕЙ
+#*****************************************************************************************
+        # расставляем точки для сайд панелей
+        if variant[0].get_direction() == ('up' or 'down'):
+            panel_1 = {'y':(variant[1]['y']), 'x1':(variant[1]['x']), 'x2':(variant[1]['x'] - 0.6)}
+            panel_2 = {'y':(variant[1]['y']), 'x1':(variant[1]['x']), 'x2':(variant[1]['x'] + 0.6)}
+            panel_3 = {'y':(variant[1]['y']), 'x1':(panel_1['x2']), 'x2':(panel_1['x2'] - 0.6)}
+            panel_4 = {'y':(variant[1]['y']), 'x1':(panel_2['x2']), 'x2':(panel_2['x2'] + 0.6)}
+            panels = [panel_1, panel_2, panel_3, panel_4]
+            panels_got = []
+        # проверяем по 2 точки каждой панели по зонам от направления
+            for panel in panels:
+                for area in h_areas:
+                    zone_1 = area.point_belongs(panel['x1'], panel['y'])
+                    if zone_1 == True:
+                        area_1 = area
+                        break
+                for area in h_areas:
+                    zone_2 = area.point_belongs(panel['x2'], panel['y'])
+                    if zone_2 == True:
+                        area_2 = area
+                        break
+                if ((zone_1 + zone_2) < 2) or (area_1 == area_2):
+                    panels_got.append(panel)
+        # если 2 и больше, то устанавливаем координаты их центров                    
+            if len(panels_got) < 2:
+                return
+            pan_centers = []
+            for panel in panels_got:
+                center = (abs(panel['x1'] - panel['x2']) / 2) + min([panel['x1'], panel['x2']])
+                for area in h_areas:
+                    loc = area.point_belongs(center, panel['y'])
+                    if loc == True:
+                        if variant[0].get_direction() == 'up':
+                            coordinate = min([area.get_coordinate('y1'), area.get_coordinate('y2')])
+                        elif variant[0].get_direction() == 'down':
+                            coordinate = max([area.get_coordinate('y1'), area.get_coordinate('y2')])
+                        break
+                pan_centers.append({'x':center, 'y':coordinate})
+        # проверяем не цепляют ли панели углы комнаты
+            pans_areas = []
+            for center in pan_centers:
+                a = center['x']
+                b = center['y']
+                pans_areas.append(Area((a - 0.3), (a + 0.3), (b - 0.003), (b + 0.003)))
+            print(pans_areas)
+            for area in pans_areas:
+                area.prnt()
+            print('...............')
+            panels_end = []
+            for area in pans_areas:
+                for point in points:
+                    val = area.point_belongs(point['x'], point['y'])
+                    if val == True:
+                        break
+                else:
+                    panels_end.append(area.focus())
+        # если осталось больше 2, то выводим их
+            if len(panels_end) < 2:
+                return
+            else:
+                variants.append(variant + panels_end)
+#*****************************************************************************************                
+# ГОРИЗОНТАЛЬНЫЙ ВАРИАНТ ДЛЯ 4 ПАНЕЛЕЙ
+#*****************************************************************************************
+        elif variant[0].get_direction() == ('left' or 'right'):
+            panel_1 = {'x':(variant[1]['x']), 'y1':(variant[1]['y']), 'y2':(variant[1]['y'] - 0.6)}
+            panel_2 = {'x':(variant[1]['x']), 'y1':(variant[1]['y']), 'y2':(variant[1]['y'] + 0.6)}
+            panel_3 = {'x':(variant[1]['x']), 'y1':(panel_1['y2']), 'y2':(panel_1['y2'] - 0.6)}
+            panel_4 = {'x':(variant[1]['x']), 'y1':(panel_2['y2']), 'y2':(panel_2['y2'] + 0.6)}
+            panels = [panel_1, panel_2, panel_3, panel_4]
+            panels_got = []
+        # проверяем по 2 точки каждой панели по зонам от направления
+            for panel in panels:
+                for area in v_areas:
+                    zone_1 = area.point_belongs(panel['x'], panel['y1'])
+                    if zone_1 == True:
+                        area_1 = area
+                        break
+                for area in v_areas:
+                    zone_2 = area.point_belongs(panel['x'], panel['y2'])
+                    if zone_2 == True:
+                        area_2 = area
+                        break
+                if ((zone_1 + zone_2) < 2) or (area_1 == area_2):
+                    panels_got.append(panel)
+        # если 2 и больше, то устанавливаем координаты их центров                    
+            if len(panels_got) < 2:
+                return
+            pan_centers = []
+            for panel in panels_got:
+                center = (abs(panel['y1'] - panel['y2']) / 2) + min([panel['y1'], panel['y2']])
+                for area in v_areas:
+                    loc = area.point_belongs(center, panel['x'])
+                    if loc == True:
+                        if variant[0].get_direction() == 'up':
+                            coordinate = min([area.get_coordinate('x1'), area.get_coordinate('x2')])
+                        elif variant[0].get_direction() == 'down':
+                            coordinate = max([area.get_coordinate('x1'), area.get_coordinate('x2')])
+                        break
+                pan_centers.append({'x':coordinate, 'y':center})                
+        # проверяем не цепляют ли панели углы комнаты
+            pans_areas = []
+            for center in pan_centers:
+                a = center['x']
+                b = center['y']
+                pans_areas.append(Area((a - 0.003), (a + 0.003), (b - 0.3), (b + 0.3)))
+            print(pans_areas)
+            for area in pans_areas:
+                area.prnt()
+            print('...............')
+            panels_end = []
+            for area in pans_areas:
+                for point in points:
+                    val = area.point_belongs(point['x'], point['y'])
+                    if val == True:
+                        break
+                else:
+                    panels_end.append(area.focus())
+        # если осталось больше 2, то выводим их
+            if len(panels_end) < 2:
+                return
+            else:
+                variants.append(variant + panels_end)
+
+
+
+
+
+
+variants = [] # список, который мы получаем после всех проверок
+# когда он будет сформирован, мы добавим к его элементам параметры панелей и точки АС
+
+# sound_speed = 343.1 # скорость звука в студии (воздух, температура 20C, давление 1А)
+# standing_wave = sound_speed / (l * 2) # формула стоячей волны
+
+# расчет будет закончен, нужно будет обеспечить вывод данных
         
 
 
