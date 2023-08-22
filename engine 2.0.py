@@ -157,8 +157,8 @@ def empty_check(area, direction, wall_list): # функция проверяет
 
 # без стены points = [{'x': 0.0, 'y': 0.0}, {'x': 0.0, 'y': 3.0}, {'x': 0.5, 'y': 3.0}, {'x': 0.5, 'y': 4.5}, {'x': 2.0, 'y': 4.5}, {'x': 2.0, 'y': 6.0}, {'x': 5.0, 'y': 6.0}, {'x': 5.0, 'y': 4.5}, {'x': 6.0, 'y': 4.5}, {'x': 6.0, 'y': 2.5}, {'x': 4.0, 'y': 2.5}, {'x': 4.0, 'y': 0.0}]
 # со стеной 
-points = [{'x': 0.0, 'y': 0.0}, {'x': 0.0, 'y': 3.0}, {'x': 0.5, 'y': 3.0}, {'x': 0.5, 'y': 4.5}, {'x': 1.5, 'y': 4.5}, {'x': 1.5, 'y': 1.0}, {'x': 2.0, 'y': 1.0}, {'x': 2.0, 'y': 6.0}, {'x': 5.0, 'y': 6.0}, {'x': 5.0, 'y': 4.5}, {'x': 6.0, 'y': 4.5}, {'x': 6.0, 'y': 2.5}, {'x': 4.0, 'y': 2.5}, {'x': 4.0, 'y': 0.0}]
-#points = [{'x': 0.0, 'y': 0.0}, {'x': 0.0, 'y': 3.0}, {'x': 3.0, 'y': 3.0}, {'x': 3.0, 'y': 2.0}, {'x':3.5, 'y': 2.0}, {'x': 3.5, 'y': 1.5}, {'x': 4.0, 'y': 1.5}, {'x': 4.0, 'y': 3.0}, {'x': 5.0, 'y': 3.0}, {'x': 5.0, 'y': 1.0}, {'x': 4.0, 'y': 1.0}, {'x':4.0, 'y': 0.5}, {'x': 5.0, 'y': 0.5}, {'x': 5.0, 'y': 0.0}]
+#points = [{'x': 0.0, 'y': 0.0}, {'x': 0.0, 'y': 3.0}, {'x': 0.5, 'y': 3.0}, {'x': 0.5, 'y': 4.5}, {'x': 1.5, 'y': 4.5}, {'x': 1.5, 'y': 1.0}, {'x': 2.0, 'y': 1.0}, {'x': 2.0, 'y': 6.0}, {'x': 5.0, 'y': 6.0}, {'x': 5.0, 'y': 4.5}, {'x': 6.0, 'y': 4.5}, {'x': 6.0, 'y': 2.5}, {'x': 4.0, 'y': 2.5}, {'x': 4.0, 'y': 0.0}]
+points = [{'x': 0.0, 'y': 0.0}, {'x': 0.0, 'y': 3.0}, {'x': 3.0, 'y': 3.0}, {'x': 3.0, 'y': 1.0}, {'x': 4.0, 'y': 1.0}, {'x': 4.0, 'y': 3.0}, {'x': 5.0, 'y': 3.0}, {'x': 5.0, 'y': 0.0}]
 check_points = []
 vertical_walls = []
 horizontal_walls = []
@@ -606,8 +606,11 @@ def pan_center(area):
 
 
 pre_variants = [] # варианты без сайд панелей
-pan_center(passed_wa_h[0])    
-print('pre_variant: ', pre_variants)
+for area in passed_wa_v:
+    pan_center(area)    
+for area in passed_wa_h:
+    pan_center(area)    
+print('pre_variants: ', pre_variants)
 
 
 ##########################################################################################
@@ -619,7 +622,7 @@ def side_panels(variant):
     wa_width = l * 1.5
     if 1.8 > wa_width >= 1.5:
 #*****************************************************************************************
-# ВЕРТИКАЛЬНЫЙ ВАРИАНТ ДЛЯ 4 ПАНЕЛЕЙ
+# ВЕРТИКАЛЬНЫЙ ВАРИАНТ ДЛЯ 2 ПАНЕЛЕЙ
 #*****************************************************************************************
         # расставляем точки для сайд панелей
         if variant[0].get_direction() == ('up' or 'down'):
@@ -710,9 +713,9 @@ def side_panels(variant):
                 for area in v_areas:
                     loc = area.point_belongs(center, panel['x'])
                     if loc == True:
-                        if variant[0].get_direction() == 'up':
+                        if variant[0].get_direction() == 'right':
                             coordinate = min([area.get_coordinate('x1'), area.get_coordinate('x2')])
-                        elif variant[0].get_direction() == 'down':
+                        elif variant[0].get_direction() == 'left':
                             coordinate = max([area.get_coordinate('x1'), area.get_coordinate('x2')])
                         break
                 pan_centers.append({'x':coordinate, 'y':center})                
@@ -747,7 +750,7 @@ def side_panels(variant):
         if variant[0].get_direction() == ('up' or 'down'):
             panel_1 = {'y':(variant[1]['y']), 'x1':(variant[1]['x'] + 0.3), 'x2':(variant[1]['x'] - 0.3)}
             panel_2 = {'y':(variant[1]['y']), 'x1':(panel_1['x2']), 'x2':(panel_1['x2'] - 0.6)}
-            panel_3 = {'y':(variant[1]['y']), 'x1':(panel_1['x1']), 'x2':(panel_1['x2'] + 0.6)}
+            panel_3 = {'y':(variant[1]['y']), 'x1':(panel_1['x1']), 'x2':(panel_1['x1'] + 0.6)}
             panels = [panel_1, panel_2, panel_3]
             panels_got = []
         # проверяем по 2 точки каждой панели по зонам от направления
@@ -808,7 +811,7 @@ def side_panels(variant):
         elif variant[0].get_direction() == ('left' or 'right'):
             panel_1 = {'x':(variant[1]['x']), 'y1':(variant[1]['y'] + 0.3), 'y2':(variant[1]['y'] - 0.3)}
             panel_2 = {'x':(variant[1]['x']), 'y1':(panel_1['y2']), 'y2':(panel_1['y2'] - 0.6)}
-            panel_3 = {'x':(variant[1]['x']), 'y1':(panel_1['y1']), 'y2':(panel_1['y2'] + 0.6)}
+            panel_3 = {'x':(variant[1]['x']), 'y1':(panel_1['y1']), 'y2':(panel_1['y1'] + 0.6)}
             panels = [panel_1, panel_2, panel_3]
             panels_got = []
         # проверяем по 2 точки каждой панели по зонам от направления
@@ -834,9 +837,9 @@ def side_panels(variant):
                 for area in v_areas:
                     loc = area.point_belongs(center, panel['x'])
                     if loc == True:
-                        if variant[0].get_direction() == 'up':
+                        if variant[0].get_direction() == 'right':
                             coordinate = min([area.get_coordinate('x1'), area.get_coordinate('x2')])
-                        elif variant[0].get_direction() == 'down':
+                        elif variant[0].get_direction() == 'left':
                             coordinate = max([area.get_coordinate('x1'), area.get_coordinate('x2')])
                         break
                 pan_centers.append({'x':coordinate, 'y':center})                
@@ -960,9 +963,9 @@ def side_panels(variant):
                 for area in v_areas:
                     loc = area.point_belongs(center, panel['x'])
                     if loc == True:
-                        if variant[0].get_direction() == 'up':
+                        if variant[0].get_direction() == 'right':
                             coordinate = min([area.get_coordinate('x1'), area.get_coordinate('x2')])
-                        elif variant[0].get_direction() == 'down':
+                        elif variant[0].get_direction() == 'left':
                             coordinate = max([area.get_coordinate('x1'), area.get_coordinate('x2')])
                         break
                 pan_centers.append({'x':coordinate, 'y':center})                
