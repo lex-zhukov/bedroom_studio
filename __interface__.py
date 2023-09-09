@@ -600,9 +600,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         
-        self.svgWidget = QtSvg.QSvgWidget('pic_location.svg')
-        self.svgWidget.setWindowTitle(QtCore.QCoreApplication.translate("schematic", "schematic"))
-        self.svgWidget.setGeometry(1400,50,500,500)
+
         
 
     def retranslateUi(self, MainWindow):
@@ -990,22 +988,22 @@ class Ui_MainWindow(object):
         
     
     def alternative(self):
-        #global counter
+
         global grand_variants
         global grand_points
-        #print('GRAND_POINTS: ', grand_points)
-        #counter = len(grand_variants)
-        #self.svgWidget.show()
-        #self.svgWidget.close()
-        grafic(grand_points, grand_variants)
-        #time.sleep(1)
-        self.svgWidget.show()
-        
         grand_variants.append(grand_variants[0])
         grand_variants.pop(0)
-        #print(grand_variants[0])
-        
-        
+        grafic(grand_points, grand_variants)
+        self.svgWidget = QtSvg.QSvgWidget('pic_location.svg')
+        self.svgWidget.setWindowTitle(QtCore.QCoreApplication.translate("schematic", "schematic"))
+        self.svgWidget.setGeometry(1400,50,500,500)
+        self.svgWidget.show()
+
+
+
+
+
+    
     
     def count(self):
         global grand_variants
