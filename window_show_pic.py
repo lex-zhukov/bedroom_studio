@@ -19,9 +19,8 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         
-        _translate = QtCore.QCoreApplication.translate
         self.svgWidget = QtSvg.QSvgWidget('pic_location.svg')
-        self.svgWidget.setWindowTitle(_translate("schematic", "schematic"))
+        self.svgWidget.setWindowTitle(QtCore.QCoreApplication.translate("schematic", "schematic"))
         self.svgWidget.setGeometry(1400,50,500,500)
         self.svgWidget.show()
         
