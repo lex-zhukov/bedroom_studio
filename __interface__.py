@@ -940,7 +940,7 @@ class Ui_MainWindow(object):
         self.p8out.setText(_translate("MainWindow", "<html><head/><body><p><br/></p></body></html>"))
         self.p7out.setText(_translate("MainWindow", "<html><head/><body><p><br/></p></body></html>"))
         self.p6out.setText(_translate("MainWindow", "<html><head/><body><p><br/></p></body></html>"))
-        self.v_number.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:12pt; font-style:italic;\">Вариантов: 5</span></p></body></html>"))
+        self.v_number.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:12pt; font-style:italic;\"></span></p></body></html>"))
         self.pushButton.setText(_translate("MainWindow", "Инструкция"))
         self.pushButton_2.setText(_translate("MainWindow", "Альтернативный вариант"))
         self.pushButton_3.setText(_translate("MainWindow", "Расчет"))
@@ -985,7 +985,7 @@ class Ui_MainWindow(object):
             pole.clear()
         for pole in poles[1]:
             pole.clear()
-        
+        self.svgWidget.close()
     
     def alternative(self):
 
@@ -994,6 +994,10 @@ class Ui_MainWindow(object):
         grand_variants.append(grand_variants[0])
         grand_variants.pop(0)
         grafic(grand_points, grand_variants)
+        self.v_number.setText('Вариантов:')
+        
+        
+        
         self.svgWidget = QtSvg.QSvgWidget('pic_location.svg')
         self.svgWidget.setWindowTitle(QtCore.QCoreApplication.translate("schematic", "schematic"))
         self.svgWidget.setGeometry(1400,50,500,500)
