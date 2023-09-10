@@ -1,7 +1,7 @@
 from __classes__ import Area
 from __classes__ import Workarea
 
-def engine(points):
+def engine(points, grand_l):
     def walls(a, b):
         c_1 = (points[a]['x'])
         c_2 = (points[b]['x'])
@@ -802,20 +802,24 @@ def engine(points):
         print('слишком сложное помещение')
 
     if room_size >= 20:
-        woofer_size = '8"' # размер НЧ динамика АС
+        # woofer_size = '8"' # размер НЧ динамика АС
         l = 2.0 # базовое расстояние между АС и sweet spot
     elif 15 <= room_size < 20:
-        woofer_size = '6-7 inch'
+        # woofer_size = '6-7 inch'
         l = 1.5    
     elif 9 <= room_size < 15:
-        woofer_size = '5 inch'
+        # woofer_size = '5 inch'
         l = 1.5     
     elif 3 <= room_size < 9:
-        woofer_size = '3-4 inch'
+        # woofer_size = '3-4 inch'
         l = 1.2
     else:
         print('too small room')
-
+    
+    # ВСТАВКА СО СТОРОННИМ ЗНАЧЕНИЕМ БАЗЫ
+    if l > grand_l >= 1.0:
+        l = grand_l   
+    
     print(room_size, "m2")
 
     # отфильтруем стены и выберем те, длина которых позволяет расположить АС

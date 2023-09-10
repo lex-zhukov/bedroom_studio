@@ -955,6 +955,7 @@ class Ui_MainWindow(object):
         self.listWidget.itemDoubleClicked.connect(self.setuptest)
     
     def setuptest(self, item):
+        self.reset()
         points = [{'x': 0.0, 'y': 3.0}, {'x': 0.5, 'y': 3.0}, {'x': 0.5, 'y': 4.5}, {'x': 1.5, 'y': 4.5}, {'x': 1.5, 'y': 1.0}, {'x': 2.0, 'y': 1.0}, {'x': 2.0, 'y': 6.0}, {'x': 5.0, 'y': 6.0}, {'x': 5.0, 'y': 4.5}, {'x': 6.0, 'y': 4.5}, {'x': 6.0, 'y': 2.5}, {'x': 4.0, 'y': 2.5}, {'x': 4.0, 'y': 0.0}]
         x_dots = (self.poles())[0]
         y_dots = (self.poles())[1]
@@ -985,7 +986,17 @@ class Ui_MainWindow(object):
             pole.clear()
         for pole in poles[1]:
             pole.clear()
-        self.svgWidget.close()
+        self.l_input.clear()
+        self.v_number.clear()
+        self.ssout.clear()
+        self.as1out.clear()
+        self.as2out.clear()
+        for pos in self.allpans():
+            pos.clear() 
+        try:
+            self.svgWidget.close()
+        except AttributeError:
+            None
     
     def alternative(self):
 
@@ -994,20 +1005,38 @@ class Ui_MainWindow(object):
         grand_variants.append(grand_variants[0])
         grand_variants.pop(0)
         grafic(grand_points, grand_variants)
-        self.v_number.setText('Вариантов:')
-        
-        
-        
+        self.v_number.setText(f'Вариантов: {len(grand_variants)}')
+        self.ssout.setText(f"Координаты точки прослушивания, м: x = {round(grand_variants[0][3]['x'], 2)}, y = {round(grand_variants[0][3]['y'], 2)}")
+        self.as1out.setText(f"Координаты первой АС, м: x = {round(grand_variants[0][0]['x'], 2)}, y = {round(grand_variants[0][0]['y'], 2)}")
+        self.as2out.setText(f"Координаты второй АС, м: x = {round(grand_variants[0][1]['x'], 2)}, y = {round(grand_variants[0][1]['y'], 2)}")
+        try:
+            for pos in self.allpans():
+                number = self.allpans().index(pos) + 5
+                pos.setText(self.formpanel(number))
+        except IndexError:
+            None
         self.svgWidget = QtSvg.QSvgWidget('pic_location.svg')
         self.svgWidget.setWindowTitle(QtCore.QCoreApplication.translate("schematic", "schematic"))
         self.svgWidget.setGeometry(1400,50,500,500)
         self.svgWidget.show()
 
-
-
-
-
+    def formpanel(self, number):
+        #global grand_variants
+        dict_number = number
+        if grand_variants[0][dict_number]['depth'] == 0:
+            membrane = 'мембраны нет'
+        else:
+            membrane = 'мембрана есть'
+        depth = grand_variants[0][dict_number]['depth']
+        if depth == 0:
+            depth = 10
+        form = f"Панель {number - 4}: координаты, м: x = {round(grand_variants[0][dict_number]['x'], 2)}, y = {round(grand_variants[0][dict_number]['y'], 2)}; d = {depth} см; {membrane}"
+        return form
     
+    def allpans(self):
+        panslist = [self.p1out, self.p2out, self.p3out, self.p4out, self.p5out,
+                    self.p6out, self.p7out, self.p8out, self.p9out, self.p10out]
+        return panslist
     
     def count(self):
         global grand_variants
@@ -1028,7 +1057,11 @@ class Ui_MainWindow(object):
                 None
             else:
                 points.append({'x':a, 'y':b})
-        grand_variants = engine(points)
+        try:
+            grand_l = float(self.l_input.toPlainText())
+        except ValueError:
+            grand_l = 0
+        grand_variants = engine(points, grand_l)
         grand_points = points
         self.alternative()            
 
