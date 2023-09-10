@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg
 from __grafic__ import grafic
 from __engine__ import engine
-import time
+from __instext__ import text_of_instructions
 
 grand_variants = []
 grand_points = []
@@ -531,6 +531,14 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         self.p10out.setFont(font)
         self.p10out.setObjectName("p10out")
+        
+        self.instructions = QtWidgets.QLabel(self.centralwidget)
+        self.instructions.setGeometry(QtCore.QRect(560, 260, 721, 561))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.instructions.setFont(font)
+        self.instructions.setObjectName("instructions")
+        
         self.p8out = QtWidgets.QLabel(self.centralwidget)
         self.p8out.setGeometry(QtCore.QRect(560, 680, 671, 41))
         font = QtGui.QFont()
@@ -947,12 +955,19 @@ class Ui_MainWindow(object):
         self.pushButton_4.setText(_translate("MainWindow", "Сброс"))       
         self.label_36.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\"><span style=\" font-size:12pt;\">Предыдущие варианты</span></p></body></html>"))
 
+        self.instruction()
+
+        self.pushButton.clicked.connect(self.instruction)        
         self.pushButton_2.clicked.connect(self.alternative)        
         self.pushButton_3.clicked.connect(self.count)
         self.pushButton_4.clicked.connect(self.reset)
         
         self.listWidget.insertItem(1, 'testing')
         self.listWidget.itemDoubleClicked.connect(self.setuptest)
+    
+    def instruction(self):
+        self.reset()
+        self.instructions.setText(text_of_instructions)
     
     def setuptest(self, item):
         self.reset()
@@ -991,6 +1006,7 @@ class Ui_MainWindow(object):
         self.ssout.clear()
         self.as1out.clear()
         self.as2out.clear()
+        self.instructions.clear()
         for pos in self.allpans():
             pos.clear() 
         try:
@@ -1005,6 +1021,7 @@ class Ui_MainWindow(object):
         grand_variants.append(grand_variants[0])
         grand_variants.pop(0)
         grafic(grand_points, grand_variants)
+        self.instructions.clear()
         self.v_number.setText(f'Вариантов: {len(grand_variants)}')
         self.ssout.setText(f"Координаты точки прослушивания, м: x = {round(grand_variants[0][3]['x'], 2)}, y = {round(grand_variants[0][3]['y'], 2)}")
         self.as1out.setText(f"Координаты первой АС, м: x = {round(grand_variants[0][0]['x'], 2)}, y = {round(grand_variants[0][0]['y'], 2)}")
