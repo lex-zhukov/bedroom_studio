@@ -1,7 +1,11 @@
 from PyQt5 import QtCore, QtGui, QtWidgets, QtSvg
+from datetime import datetime
+import sqlite3
+
 from __grafic__ import grafic
 from __engine__ import engine
 from __instext__ import text_of_instructions
+
 
 grand_variants = []
 grand_points = []
@@ -964,6 +968,30 @@ class Ui_MainWindow(object):
         
         self.listWidget.insertItem(1, 'testing')
         self.listWidget.itemDoubleClicked.connect(self.setuptest)
+        
+        self.listWidget.insertItem(1, 'f')
+    
+    def saving(self):
+        # шифр имени
+        start_name = str(datetime.now())
+        second_name = start_name.replace(' ', '---')
+        last_name = second_name.replace(':', '-')
+        name = last_name.replace('.', '-')
+        # шифр id
+        idee = int(start_name[-6:])
+        # шифр данных
+        data_st = ''
+        for dicty in grand_points:
+            a = dicty['x']
+            b = dicty['y']
+            data_st += str(a) + '-' + str(b) + '-'
+        data = data_st.replace('.', 'j')
+        with sqlite3.connect('saves.db') as db:
+            cursor = db.cursor()
+            query = f"INSERT INTO saveddots (id, name, data) VALUES ({idee}, '{name}', '{data}') "
+            cursor.execute(query)
+        
+        self.listWidget.insertItem(1, f'{name}')
     
     def instruction(self):
         self.reset()
